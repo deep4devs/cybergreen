@@ -4,41 +4,42 @@ import Navbar from './components/Navbar';
 import ServiceGrid from './components/ServiceGrid';
 import ThreatMonitor from './components/ThreatMonitor';
 import AISecurityAdvisor from './components/AISecurityAdvisor';
-import ContactModal from './components/ContactModal'; // NEW IMPORT
+import ContactModal from './components/ContactModal';
 import { Page, SecurityService, Language } from './types';
 import { getServices, TRANSLATIONS } from './constants';
+import { ShieldCheck, Target, Eye, Gem, Award, Terminal, Network, Layers, Repeat } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const [lang, setLang] = useState<Language>('es');
   const [selectedService, setSelectedService] = useState<SecurityService | null>(null);
   
-  const [isContactOpen, setIsContactOpen] = useState(false); // NEW STATE
-  const [contactServiceTitle, setContactServiceTitle] = useState<string | undefined>(); // NEW STATE
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactServiceTitle, setContactServiceTitle] = useState<string | undefined>();
 
   const t = TRANSLATIONS[lang];
   const allServices = getServices(lang);
 
   const toggleLang = () => setLang((prev) => (prev === 'es' ? 'en' : 'es'));
 
-  // NEW: Function to open the contact modal, optionally with a service title
   const openContact = (serviceName?: string) => {
     setContactServiceTitle(serviceName);
     setIsContactOpen(true);
   };
 
-  // NEW: Close contact modal
   const closeContact = () => {
     setIsContactOpen(false);
     setContactServiceTitle(undefined);
   };
 
   const renderContent = () => {
+    const isEs = lang === 'es';
     switch (currentPage) {
       case Page.Home:
         return (
-          <div className="space-y-24 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <header className="text-center py-20 px-4">
+          <div className="space-y-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            {/* Hero Section */}
+            <header className="text-center py-10 px-4">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-500 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-10">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                 {lang === 'es' ? 'Protección Activa' : 'Active Protection'}
@@ -47,12 +48,14 @@ const App: React.FC = () => {
                 {t.heroTitle} <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 drop-shadow-sm">{t.heroFuture}</span>
               </h1>
-              <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed opacity-80">
+              <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed opacity-80 mb-6">
                 {t.heroDesc}
               </p>
-              <div className="mt-14 flex flex-wrap justify-center gap-5">
+              <p className="text-emerald-500/60 font-mono text-xs uppercase tracking-[0.3em] font-bold mb-14 italic">
+                &quot;{t.slogan}&quot;
+              </p>
+              <div className="flex flex-wrap justify-center gap-5">
                 <button 
-                  // MODIFIED: Call openContact instead of an internal AI action
                   onClick={() => openContact(lang === 'es' ? 'Escaneo IA Preventivo' : 'Preventive AI Scan')}
                   className="bg-emerald-500 hover:bg-emerald-400 text-white px-10 py-5 rounded-2xl font-extrabold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 hover:-translate-y-1 active:translate-y-0"
                 >
@@ -67,6 +70,82 @@ const App: React.FC = () => {
               </div>
             </header>
 
+            {/* Corporate Profile Section (20 Years Experience) */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-emerald-500/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <div className="relative bg-slate-900/40 border border-white/5 p-12 rounded-[3rem] overflow-hidden">
+                   <div className="flex items-center gap-6 mb-8">
+                     <div className="text-6xl font-black text-emerald-500 tracking-tighter">{t.experienceYears}</div>
+                     <div className="h-12 w-px bg-white/10"></div>
+                     <div className="text-xs font-bold text-slate-500 uppercase tracking-widest leading-loose max-w-[150px]">
+                       {t.experienceText}
+                     </div>
+                   </div>
+                   <h2 className="text-3xl font-extrabold text-white mb-6 tracking-tight">{t.aboutTitle}</h2>
+                   <p className="text-slate-400 text-lg leading-relaxed font-medium">
+                     {t.aboutDesc}
+                   </p>
+                   <div className="mt-10 flex gap-4">
+                      <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2 text-[10px] font-black uppercase text-emerald-400 tracking-widest">
+                        <Award size={14} /> Certified Excellence
+                      </div>
+                      <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 flex items-center gap-2 text-[10px] font-black uppercase text-cyan-400 tracking-widest">
+                        <ShieldCheck size={14} /> Global Protection
+                      </div>
+                   </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6">
+                {/* Mission Card */}
+                <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] hover:bg-white/[0.04] transition-all group">
+                   <div className="flex items-start gap-6">
+                      <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 group-hover:scale-110 transition-transform">
+                        <Target size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-3">{t.missionTitle}</h3>
+                        <p className="text-slate-500 text-sm font-medium leading-relaxed">{t.missionDesc}</p>
+                      </div>
+                   </div>
+                </div>
+                {/* Vision Card */}
+                <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] hover:bg-white/[0.04] transition-all group">
+                   <div className="flex items-start gap-6">
+                      <div className="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-500 shrink-0 group-hover:scale-110 transition-transform">
+                        <Eye size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-3">{t.visionTitle}</h3>
+                        <p className="text-slate-500 text-sm font-medium leading-relaxed">{t.visionDesc}</p>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Values Section */}
+            <section>
+              <div className="text-center mb-16">
+                 <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight">{t.valuesTitle}</h2>
+                 <div className="h-1 w-20 bg-emerald-500 mx-auto rounded-full"></div>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {(t.valuesList as string[]).map((val, idx) => (
+                  <div key={idx} className="bg-slate-900/50 border border-white/5 p-10 rounded-[2.5rem] text-center group hover:border-emerald-500/30 transition-all">
+                     <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 mx-auto mb-6 group-hover:rotate-12 transition-transform">
+                       <Gem size={20} />
+                     </div>
+                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-white transition-colors">
+                       {val}
+                     </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* SOC Section */}
             <section className="glass p-8 sm:p-12 rounded-[3rem] shadow-3xl">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">
                 <h2 className="text-3xl font-extrabold text-white tracking-tight">{t.socTitle}</h2>
@@ -78,6 +157,7 @@ const App: React.FC = () => {
               <ThreatMonitor lang={lang} />
             </section>
 
+            {/* Stats Summary */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10">
               {[
                 { label: t.statThreat, value: '99.9%', color: 'text-emerald-500' },
@@ -100,7 +180,6 @@ const App: React.FC = () => {
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.navServices}</h2>
               <p className="text-slate-400 font-medium">{t.heroDesc}</p>
             </div>
-            {/* MODIFIED: onRequestQuote now calls openContact */}
             <ServiceGrid 
                 onSelect={setSelectedService} 
                 onRequestQuote={(service) => openContact(service.title)} 
@@ -133,7 +212,6 @@ const App: React.FC = () => {
               ))}
             </div>
             <div className="pt-16 border-t border-white/5">
-               {/* MODIFIED: onRequestQuote now calls openContact */}
                <ServiceGrid 
                   onSelect={setSelectedService} 
                   onRequestQuote={(service) => openContact(service.title)} 
@@ -160,11 +238,53 @@ const App: React.FC = () => {
                     </div>
                   ))}
                </div>
-               {/* MODIFIED: onRequestQuote now calls openContact */}
                <ServiceGrid 
                   onSelect={setSelectedService} 
                   onRequestQuote={(service) => openContact(service.title)} 
                   services={allServices.filter(s => s.category === 'cloud')} 
+                  lang={lang} 
+               />
+            </div>
+          </div>
+        );
+
+      case Page.LinuxSecurity:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="text-emerald-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Hardening Experts</div>
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.linuxTitle}</h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.linuxDesc}</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: isEs ? 'SUSE Hardening' : 'SUSE Hardening', desc: isEs ? 'Configuración de seguridad profunda para SLES 15+.' : 'Deep security configuration for SLES 15+.', icon: Terminal },
+                 { title: isEs ? 'DNS Seguro' : 'Secure DNS', desc: isEs ? 'DNS recursivo con DNSSEC y filtrado avanzado.' : 'Recursive DNS with DNSSEC and advanced filtering.', icon: Network },
+                 { title: isEs ? 'Virtualización' : 'Virtualization', desc: isEs ? 'KVM y Xen endurecidos para cargas críticas.' : 'Hardened KVM and Xen for critical workloads.', icon: Layers },
+                 { title: isEs ? 'Migración' : 'Migration', desc: isEs ? 'Transición segura desde VMware y Hyper-V.' : 'Secure transition from VMware and Hyper-V.', icon: Repeat },
+               ].map((item, i) => (
+                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-emerald-500/30 transition-all">
+                    <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+                 </div>
+               ))}
+            </div>
+
+            <div className="bg-emerald-500/5 border border-emerald-500/10 p-12 rounded-[3rem] text-center">
+               <h3 className="text-2xl font-bold text-white mb-8">{isEs ? 'Puente de Migración Empresarial' : 'Enterprise Migration Bridge'}</h3>
+               <div className="flex flex-wrap justify-center gap-6 mb-12">
+                  {['VMware ESXi', 'Microsoft Hyper-V', 'Citrix Hypervisor', 'Oracle VM'].map(v => (
+                    <div key={v} className="px-6 py-3 bg-slate-900 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{v} → SUSE/KVM</div>
+                  ))}
+               </div>
+               <ServiceGrid 
+                  onSelect={setSelectedService} 
+                  onRequestQuote={(service) => openContact(service.title)} 
+                  services={allServices.filter(s => s.category === 'linux')} 
                   lang={lang} 
                />
             </div>
@@ -200,7 +320,6 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="pt-16">
-               {/* MODIFIED: onRequestQuote now calls openContact */}
                <ServiceGrid 
                   onSelect={setSelectedService} 
                   onRequestQuote={(service) => openContact(service.title)} 
@@ -273,7 +392,7 @@ const App: React.FC = () => {
               <ul className="space-y-5 text-sm text-slate-500 font-medium">
                 <li className="flex items-center gap-3">
                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                   contact@cyberguard.mx {/* Updated email for footer */}
+                   contact@cyberguard.mx
                 </li>
               </ul>
             </div>
@@ -315,7 +434,7 @@ const App: React.FC = () => {
             </div>
             <button 
               onClick={() => {
-                openContact(selectedService.title); // MODIFIED: Call openContact
+                openContact(selectedService.title);
                 setSelectedService(null);
               }}
               className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-extrabold uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 hover:bg-emerald-400 hover:-translate-y-1 transition-all text-sm"
@@ -326,7 +445,6 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* NEW: Render ContactModal */}
       <ContactModal 
         isOpen={isContactOpen} 
         onClose={closeContact} 

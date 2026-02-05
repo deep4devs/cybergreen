@@ -1,7 +1,7 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle 
+  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu
 } from 'lucide-react';
 
 export const getServices = (lang: Language): SecurityService[] => {
@@ -78,6 +78,15 @@ export const getServices = (lang: Language): SecurityService[] => {
        category: 'reactive',
        longDescription: isEs ? 'Nuestro equipo de élite se despliega para neutralizar amenazas y restaurar la integridad del sistema.' : 'Our elite team deploys to neutralize threats and restore system integrity.',
        features: isEs ? ['Forense Digital', 'Remediación', 'Cacería de Amenazas'] : ['Digital Forensics', 'Remediation', 'Threat Hunting']
+    },
+    {
+      id: 'linux-01',
+      title: isEs ? 'Linux Hardening (SUSE)' : 'Linux Hardening (SUSE)',
+      description: isEs ? 'Blindaje experto para SUSE Linux Enterprise y virtualización segura.' : 'Expert shielding for SUSE Linux Enterprise and secure virtualization.',
+      icon: Terminal,
+      category: 'linux',
+      longDescription: isEs ? 'Especialistas en endurecimiento de SUSE Linux Enterprise (SLES), configuración de DNS recursivo seguro y migración de infraestructuras críticas desde entornos comerciales como VMware y Hyper-V.' : 'Specialists in SUSE Linux Enterprise (SLES) hardening, secure recursive DNS configuration, and critical infrastructure migration from commercial environments like VMware and Hyper-V.',
+      features: isEs ? ['Hardening SUSE SLES', 'DNS recursivo DNSSEC', 'Migración VMware/Hyper-V', 'Virtualización KVM/Xen'] : ['SUSE SLES Hardening', 'DNSSEC Recursive DNS', 'VMware/Hyper-V Migration', 'KVM/Xen Virtualization']
     }
   ];
 };
@@ -87,6 +96,17 @@ export const TRANSLATIONS = {
     heroTitle: 'CYBERSEGURIDAD',
     heroFuture: 'AVANZADA',
     heroDesc: 'Servicios de Cyberseguridad Avanzada con integraciones de AI preventiva para una protección total de infraestructuras críticas.',
+    slogan: 'Digital AI Security for Business Resilience and Profitability',
+    aboutTitle: 'Líderes con Experiencia',
+    aboutDesc: 'Somos una empresa con más de 20 años de experiencia en ciberseguridad, comprometida con la excelencia técnica y la protección de activos globales.',
+    missionTitle: 'Misión',
+    missionDesc: 'Proveer Soluciones Avanzadas de Ciberseguridad para cualquier tamaño de empresa, garantizando la continuidad del negocio mediante tecnología de vanguardia.',
+    visionTitle: 'Visión',
+    visionDesc: 'Crear un ecosistema más seguro y rentable para desarrollarnos plenamente en una era de transformación digital acelerada.',
+    valuesTitle: 'Valores',
+    valuesList: ['Innovación Constante', 'Integridad Absoluta', 'Resiliencia Operativa', 'Rentabilidad Sostenible'],
+    experienceYears: '20+ Años',
+    experienceText: 'Trayectoria Protegiendo el Futuro',
     btnAI: 'Obtener Escaneo IA',
     btnServices: 'Explorar Servicios',
     btnLearnMore: 'Saber Más',
@@ -104,6 +124,7 @@ export const TRANSLATIONS = {
     navNIST: 'Marco NIST',
     navCloud: 'Seguridad Nube',
     navAI: 'Seguridad IA',
+    navLinux: 'Linux Hardening',
     login: 'Acceso Clientes',
     footerDesc: 'Protección especializada para activos digitales e infraestructura crítica.',
     legal: 'Legal',
@@ -115,6 +136,8 @@ export const TRANSLATIONS = {
     cloudDesc: 'Protección profunda para infraestructuras distribuidas y arquitecturas serverless.',
     aiTitle: 'Blindaje para Inteligencia Artificial',
     aiDesc: 'Estrategias de defensa para la nueva frontera de las amenazas automatizadas.',
+    linuxTitle: 'The Linux Hardening (SUSE)',
+    linuxDesc: 'Servicios especializados en SUSE Linux, DNS seguro y migración de virtualización propietaria a entornos endurecidos.',
     initDeployment: 'Iniciar Despliegue',
     requestInfo: 'Solicitar Información'
   },
@@ -122,6 +145,17 @@ export const TRANSLATIONS = {
     heroTitle: 'ADVANCED',
     heroFuture: 'CYBERSECURITY',
     heroDesc: 'Advanced Cybersecurity Services with preventive AI integrations for total protection of critical infrastructures.',
+    slogan: 'Digital AI Security for Business Resilience and Profitability',
+    aboutTitle: 'Experienced Leaders',
+    aboutDesc: 'We are a company with over 20 years of experience in cybersecurity, committed to technical excellence and the protection of global assets.',
+    missionTitle: 'Mission',
+    missionDesc: 'To provide Advanced Cybersecurity Solutions for businesses of any size, ensuring business continuity through cutting-edge technology.',
+    visionTitle: 'Vision',
+    visionDesc: 'To create a safer and more profitable ecosystem to fully thrive in an era of accelerated digital transformation.',
+    valuesTitle: 'Values',
+    valuesList: ['Constant Innovation', 'Absolute Integrity', 'Operational Resilience', 'Sustainable Profitability'],
+    experienceYears: '20+ Years',
+    experienceText: 'Protective Legacy for the Future',
     btnAI: 'Get AI Scan',
     btnServices: 'Explore Services',
     btnLearnMore: 'Learn More',
@@ -139,6 +173,7 @@ export const TRANSLATIONS = {
     navNIST: 'NIST Framework',
     navCloud: 'Cloud Security',
     navAI: 'AI Security',
+    navLinux: 'Linux Hardening',
     login: 'Client Login',
     footerDesc: 'Specialized protection for digital assets and critical infrastructure.',
     legal: 'Legal',
@@ -150,6 +185,8 @@ export const TRANSLATIONS = {
     cloudDesc: 'Deep protection for distributed infrastructures and serverless architectures.',
     aiTitle: 'Artificial Intelligence Shielding',
     aiDesc: 'Defense strategies for the new frontier of automated threats.',
+    linuxTitle: 'The Linux Hardening (SUSE)',
+    linuxDesc: 'Specialized services in SUSE Linux, secure DNS, and migration from proprietary virtualization to hardened environments.',
     initDeployment: 'Initiate Deployment',
     requestInfo: 'Request Information'
   }

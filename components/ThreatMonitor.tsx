@@ -4,7 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useQuery } from '@tanstack/react-query';
 import { generateThreatIntel, ThreatIntel } from '../services/geminiService';
 import { Language } from '../types';
-import { Shield, Zap, Target, Cpu, Activity, Info } from 'lucide-react';
+import { Shield, Zap, Target, Cpu, Activity, Info, Users } from 'lucide-react';
 
 interface ThreatMonitorProps {
   lang: Language;
@@ -58,15 +58,17 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
   // Latest alert type to trigger query
   const latestAlertType = useMemo(() => activeAlerts[0]?.type || "Baseline Network Security", [activeAlerts]);
 
-  const { data: latestIntel, isFetching: loadingIntel, isError } = useQuery({
+  // Fix: Corrected queryFunction to queryFn and added explicit generic types to useQuery
+  const { data: latestIntel, isFetching: loadingIntel, isError } = useQuery<ThreatIntel, Error>({
     queryKey: ['threatIntel', latestAlertType, lang],
-    queryFunction: () => generateThreatIntel(latestAlertType, lang),
+    queryFn: () => generateThreatIntel(latestAlertType, lang),
     retry: 1,
     staleTime: 30000,
   });
 
   // Track history of AI intel
   useEffect(() => {
+    // Fix: latestIntel is now correctly typed as ThreatIntel | undefined
     if (latestIntel && !intelHistory.some(item => item.title === latestIntel.title)) {
       setIntelHistory(prev => [latestIntel, ...prev].slice(0, 3));
     }
@@ -207,7 +209,7 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
           </div>
         </div>
 
-        {/* NEW SECTION: AI Intelligence History Feed */}
+        {/* AI Intelligence History Feed */}
         <div className="lg:col-span-4 space-y-4 mt-4">
            <div className="flex items-center justify-between">
               <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
@@ -222,30 +224,49 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
 
            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {intelHistory.length > 0 ? intelHistory.map((intel, idx) => (
-                <div key={idx} className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-emerald-500/20 transition-all group relative overflow-hidden">
+                <div key={idx} className="bg-slate-900/40 border border-white/5 rounded-2xl p-6 hover:border-emerald-500/20 transition-all group relative overflow-hidden flex flex-col h-full">
                   <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20 group-hover:bg-emerald-500 transition-all"></div>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="text-[10px] font-bold text-white uppercase tracking-tight group-hover:text-emerald-400 transition-colors">
+                  
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="text-[11px] font-black text-white uppercase tracking-tight group-hover:text-emerald-400 transition-colors leading-tight max-w-[80%]">
                       {intel.title}
                     </div>
-                    <span className="text-[8px] font-black text-slate-700 uppercase tracking-tighter">AI-GEN</span>
+                    <span className="text-[8px] font-black text-slate-700 uppercase tracking-tighter shrink-0 ml-2">AI-ARCHIVE</span>
                   </div>
-                  <p className="text-[10px] text-slate-500 leading-relaxed mb-4 line-clamp-2 font-medium">
-                    {intel.technicalDetails}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <div className="px-2 py-0.5 rounded bg-white/5 border border-white/5 text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+
+                  {/* Attacker Profile Field */}
+                  <div className="mb-4">
+                    <div className="text-[8px] font-black text-slate-600 uppercase mb-1 flex items-center gap-1 tracking-widest">
+                      <Users size={8} /> {isEs ? 'PERFIL ATACANTE' : 'ATTACKER PROFILE'}
+                    </div>
+                    <div className="text-[10px] text-emerald-500/80 font-bold italic line-clamp-1">
+                      {intel.attackerProfile}
+                    </div>
+                  </div>
+
+                  {/* Technical Details Field */}
+                  <div className="flex-grow">
+                    <div className="text-[8px] font-black text-slate-600 uppercase mb-1 flex items-center gap-1 tracking-widest">
+                      <Info size={8} /> {isEs ? 'DETALLES TÉCNICOS' : 'TECHNICAL DETAILS'}
+                    </div>
+                    <p className="text-[10px] text-slate-400 leading-relaxed line-clamp-3 font-medium">
+                      {intel.technicalDetails}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-2 py-0.5 rounded bg-white/5 border border-white/5 text-[8px] font-bold text-slate-500 uppercase tracking-widest">
                       {isEs ? 'Mitigado' : 'Mitigated'}
                     </div>
                     <div className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[8px] font-bold uppercase tracking-widest">
-                      {isEs ? 'Confirmado' : 'Confirmed'}
+                      {isEs ? 'Verificado' : 'Verified'}
                     </div>
                   </div>
                 </div>
               )) : (
-                <div className="col-span-3 py-10 text-center border border-dashed border-white/5 rounded-2xl">
-                  <div className="text-[10px] font-bold text-slate-700 uppercase tracking-[0.5em]">
-                    {isEs ? 'Iniciando Enlace Neural...' : 'Initializing Neural Link...'}
+                <div className="col-span-3 py-16 text-center border border-dashed border-white/5 rounded-3xl bg-slate-900/10">
+                  <div className="text-[10px] font-bold text-slate-700 uppercase tracking-[0.5em] animate-pulse">
+                    {isEs ? 'Sincronizando Base de Conocimientos...' : 'Synchronizing Knowledge Base...'}
                   </div>
                 </div>
               )}

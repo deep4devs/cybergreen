@@ -26,6 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLang
     { name: t.navServices, id: Page.Services },
     { name: t.navNIST, id: Page.NIST },
     { name: t.navCloud, id: Page.CloudSecurity },
+    { name: t.navLinux, id: Page.LinuxSecurity },
     { name: t.navAI, id: Page.AISecurity },
     { name: t.navAdvisor, id: Page.Advisor },
     { name: t.navMonitor, id: Page.Monitor },
