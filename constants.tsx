@@ -81,9 +81,9 @@ export const getServices = (lang: Language): SecurityService[] => {
 
 export const TRANSLATIONS = {
   es: {
-    heroTitle: 'ASEGURA TU',
-    heroFuture: 'FUTURO',
-    heroDesc: 'Servicios de ciberseguridad de próxima generación impulsados por inteligencia humana de élite e IA avanzada.',
+    heroTitle: 'CYBERSEGURIDAD',
+    heroFuture: 'AVANZADA',
+    heroDesc: 'Servicios de Cyberseguridad Avanzada con integraciones de AI preventiva para una protección total de infraestructuras críticas.',
     btnAI: 'Obtener Escaneo IA',
     btnServices: 'Explorar Servicios',
     btnLearnMore: 'Saber Más',
@@ -116,9 +116,9 @@ export const TRANSLATIONS = {
     requestInfo: 'Solicitar Información'
   },
   en: {
-    heroTitle: 'SECURE YOUR',
-    heroFuture: 'FUTURE',
-    heroDesc: 'Next-generation cybersecurity services powered by elite human intelligence and advanced AI.',
+    heroTitle: 'ADVANCED',
+    heroFuture: 'CYBERSECURITY',
+    heroDesc: 'Advanced Cybersecurity Services with preventive AI integrations for total protection of critical infrastructures.',
     btnAI: 'Get AI Scan',
     btnServices: 'Explore Services',
     btnLearnMore: 'Learn More',
