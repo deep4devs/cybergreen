@@ -1,0 +1,7 @@
+{
+  "name": "CyberGuard Security Services. ",
+  "description": "A high-performance cybersecurity services platform featuring AI-driven threat analysis, real-time security monitoring, and a comprehensive suite of professional security services.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
