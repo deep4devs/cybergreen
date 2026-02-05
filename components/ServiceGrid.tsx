@@ -33,8 +33,8 @@ const ServiceGrid: React.FC<ServiceGridProps> = ({ onSelect, onRequestQuote, ser
             <div className={`px-4 py-1 rounded-full border text-[9px] font-extrabold uppercase tracking-widest ${CATEGORY_STYLES[service.category]}`}>
               {service.category}
             </div>
-            <div className="text-3xl filter grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-125">
-              {service.icon}
+            <div className="text-3xl filter grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-125 text-emerald-400">
+              <service.icon size={36} strokeWidth={1.5} />
             </div>
           </div>
 

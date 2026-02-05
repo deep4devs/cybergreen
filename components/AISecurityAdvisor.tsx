@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { getSecurityAdvice, QuotaError } from '../services/geminiService';
 import { SecurityAdvice, Language } from '../types';
 
@@ -9,31 +10,25 @@ interface AISecurityAdvisorProps {
 
 const AISecurityAdvisor: React.FC<AISecurityAdvisorProps> = ({ lang }) => {
   const [input, setInput] = useState('');
-  const [advice, setAdvice] = useState<SecurityAdvice | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
   const isEs = lang === 'es';
 
-  const handleAnalyze = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const mutation = useMutation({
+    mutationFn: (infrastructure: string) => getSecurityAdvice(infrastructure, lang),
+  });
 
-    setLoading(true);
-    setError('');
-    try {
-      const result = await getSecurityAdvice(input, lang);
-      setAdvice(result);
-    } catch (err: any) {
-      if (err instanceof QuotaError) {
-        setError(err.message);
-      } else {
-        setError(isEs ? 'Error en el motor de análisis. Por favor intenta de nuevo.' : 'Analysis engine error. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
+  const handleAnalyze = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || mutation.isPending) return;
+    mutation.mutate(input);
   };
+
+  const advice = mutation.data;
+  const loading = mutation.isPending;
+  const error = mutation.error ? (
+    mutation.error instanceof QuotaError 
+      ? mutation.error.message 
+      : (isEs ? 'Error en el motor de análisis. Por favor intenta de nuevo.' : 'Analysis engine error. Please try again.')
+  ) : null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-10 pb-12 animate-in fade-in duration-700">

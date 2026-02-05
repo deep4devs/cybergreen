@@ -1,5 +1,8 @@
 
 import { SecurityService, Language } from './types';
+import { 
+  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle 
+} from 'lucide-react';
 
 export const getServices = (lang: Language): SecurityService[] => {
   const isEs = lang === 'es';
@@ -8,7 +11,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'pt-01',
       title: isEs ? 'Pruebas de Penetración' : 'Penetration Testing',
       description: isEs ? 'Ciberataques simulados avanzados para identificar vulnerabilidades.' : 'Advanced simulated cyberattacks to identify vulnerabilities.',
-      icon: '🎯',
+      icon: Target,
       category: 'proactive',
       longDescription: isEs ? 'Nuestros hackers éticos realizan exploraciones profundas de su infraestructura, imitando vectores de ataque del mundo real.' : 'Our ethical hackers perform deep-dive explorations of your infrastructure, mimicking real-world attack vectors.',
       features: isEs ? ['Apps Web', 'Redes', 'Móvil', 'Ingeniería Social'] : ['Web Apps', 'Networks', 'Mobile', 'Social Engineering']
@@ -17,7 +20,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'nist-01',
       title: isEs ? 'Implementación NIST CSF' : 'NIST CSF Implementation',
       description: isEs ? 'Alineación completa con el Marco de Ciberseguridad NIST 2.0.' : 'Full alignment with the NIST 2.0 Cybersecurity Framework.',
-      icon: '🏛️',
+      icon: Scale,
       category: 'nist',
       longDescription: isEs ? 'Establecemos un programa de ciberseguridad basado en riesgos utilizando los cinco pilares de NIST.' : 'We establish a risk-based cybersecurity program using the five NIST pillars.',
       features: ['Identify', 'Protect', 'Detect', 'Respond', 'Recover']
@@ -26,7 +29,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'nist-02',
       title: isEs ? 'Auditoría de Cumplimiento' : 'Compliance Audit',
       description: isEs ? 'Evaluaciones de brechas y preparación para auditorías gubernamentales.' : 'Gap assessments and readiness for government audits.',
-      icon: '📋',
+      icon: ClipboardCheck,
       category: 'nist',
       longDescription: isEs ? 'Evaluamos sus controles actuales frente a los requisitos de NIST 800-53 o 800-171.' : 'We evaluate your current controls against NIST 800-53 or 800-171 requirements.',
       features: isEs ? ['Mapa de Controles', 'Análisis de Brechas', 'Plan de Acción'] : ['Control Mapping', 'Gap Analysis', 'POAM Development']
@@ -35,7 +38,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'cloud-01',
       title: isEs ? 'Seguridad AWS & Azure' : 'AWS & Azure Security',
       description: isEs ? 'Configuración de seguridad nativa y endurecimiento de IAM.' : 'Native security configuration and IAM hardening.',
-      icon: '☁️',
+      icon: Cloud,
       category: 'cloud',
       longDescription: isEs ? 'Protegemos sus cargas de trabajo en la nube mediante configuraciones seguras y monitoreo continuo.' : 'We protect your cloud workloads through secure configurations and continuous monitoring.',
       features: ['IAM Policy Review', 'VPC Hardening', 'S3 Encryption', 'GuardDuty Ops']
@@ -44,7 +47,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'cloud-02',
       title: isEs ? 'Seguridad de Kubernetes' : 'Kubernetes Security',
       description: isEs ? 'Blindaje de contenedores y microservicios en la nube.' : 'Shielding containers and microservices in the cloud.',
-      icon: '📦',
+      icon: Package,
       category: 'cloud',
       longDescription: isEs ? 'Implementamos seguridad en todo el ciclo de vida del contenedor, desde la imagen hasta la ejecución.' : 'We implement security throughout the container lifecycle, from image to runtime.',
       features: ['RBAC Config', 'Network Policies', 'Image Scanning', 'Runtime Protection']
@@ -53,7 +56,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'ai-01',
       title: isEs ? 'Defensa de LLM' : 'LLM Defense',
       description: isEs ? 'Protección contra inyección de prompts y fuga de datos.' : 'Protection against prompt injection and data leakage.',
-      icon: '🤖',
+      icon: Bot,
       category: 'ai',
       longDescription: isEs ? 'Aseguramos que sus modelos de lenguaje no sean manipulados ni filtren información confidencial.' : 'We ensure your language models are not manipulated and do not leak confidential information.',
       features: isEs ? ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection'] : ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection']
@@ -62,7 +65,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       id: 'ai-02',
       title: isEs ? 'Gobernanza de IA' : 'AI Governance',
       description: isEs ? 'Políticas y ética para el despliegue seguro de IA.' : 'Policies and ethics for secure AI deployment.',
-      icon: '⚖️',
+      icon: Gavel,
       category: 'ai',
       longDescription: isEs ? 'Marco de trabajo para el uso responsable y seguro de la inteligencia artificial corporativa.' : 'Framework for the responsible and secure use of corporate artificial intelligence.',
       features: isEs ? ['Ética de IA', 'Privacidad de Datos', 'Cumplimiento Legal'] : ['AI Ethics', 'Data Privacy', 'Legal Compliance']
@@ -71,7 +74,7 @@ export const getServices = (lang: Language): SecurityService[] => {
        id: 'ir-01',
        title: isEs ? 'Respuesta a Incidentes' : 'Incident Response',
        description: isEs ? 'Respuesta rápida 24/7 para contener amenazas activas.' : 'Rapid 24/7 response to contain active threats.',
-       icon: '🚨',
+       icon: AlertTriangle,
        category: 'reactive',
        longDescription: isEs ? 'Nuestro equipo de élite se despliega para neutralizar amenazas y restaurar la integridad del sistema.' : 'Our elite team deploys to neutralize threats and restore system integrity.',
        features: isEs ? ['Forense Digital', 'Remediación', 'Cacería de Amenazas'] : ['Digital Forensics', 'Remediation', 'Threat Hunting']

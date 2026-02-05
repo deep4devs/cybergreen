@@ -1,9 +1,11 @@
 
+import type { ElementType } from 'react';
+
 export interface SecurityService {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: ElementType;
   category: 'proactive' | 'reactive' | 'compliance' | 'cloud' | 'nist' | 'ai';
   longDescription: string;
   features: string[];

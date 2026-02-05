@@ -1,8 +1,10 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { generateThreatIntel, ThreatIntel, QuotaError } from '../services/geminiService';
+import { useQuery } from '@tanstack/react-query';
+import { generateThreatIntel, ThreatIntel } from '../services/geminiService';
 import { Language } from '../types';
+import { Shield, Zap, Target, Cpu, Activity, Info } from 'lucide-react';
 
 interface ThreatMonitorProps {
   lang: Language;
@@ -21,12 +23,6 @@ const SIMULATED_INTEL: Record<string, ThreatIntel[]> = {
       technicalDetails: "Inbound traffic spike identified as a SYN flood originating from a botnet of IoT devices. Traffic reaching 40Gbps.",
       attackerProfile: "Hired Botnet Operator",
       recommendedCountermeasure: "Activate edge-filtering rules and scrub traffic through global CDN nodes."
-    },
-    {
-      title: "SQL Injection Attempt Blocked",
-      technicalDetails: "WAF intercepted malicious payload attempting to bypass authentication on the payroll portal using 'OR 1=1' variants.",
-      attackerProfile: "Script Kiddie / Automated Scanner",
-      recommendedCountermeasure: "Patch database drivers and implement parameterized queries across all endpoints."
     }
   ],
   es: [
@@ -41,12 +37,6 @@ const SIMULATED_INTEL: Record<string, ThreatIntel[]> = {
       technicalDetails: "Pico de tráfico entrante identificado como un ataque SYN flood originado por una botnet de dispositivos IoT. El tráfico alcanzó los 40 Gbps.",
       attackerProfile: "Operador de Botnet a sueldo",
       recommendedCountermeasure: "Activar reglas de filtrado perimetral y limpiar el tráfico a través de nodos CDN globales."
-    },
-    {
-      title: "Intento de Inyección SQL Bloqueado",
-      technicalDetails: "El WAF interceptó un payload malicioso que intentaba eludir la autenticación en el portal de nómina utilizando variantes de 'OR 1=1'.",
-      attackerProfile: "Script Kiddie / Escáner automatizado",
-      recommendedCountermeasure: "Parchear los controladores de la base de datos e implementar consultas parametrizadas en todos los puntos finales."
     }
   ]
 };
@@ -62,34 +52,32 @@ const generateData = () => {
 const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
   const [data, setData] = useState(generateData());
   const [activeAlerts, setActiveAlerts] = useState<{ id: string; text: string; type: string }[]>([]);
-  const [latestIntel, setLatestIntel] = useState<ThreatIntel | null>(null);
-  const [loadingIntel, setLoadingIntel] = useState(false);
-  const [isUsingSimulatedData, setIsUsingSimulatedData] = useState(false);
-  const lastFetchTime = useRef<number>(0);
+  const [intelHistory, setIntelHistory] = useState<ThreatIntel[]>([]);
   const isEs = lang === 'es';
 
-  const fetchIntel = useCallback(async (threatType: string) => {
-    // Basic throttling: only try to fetch once every 30 seconds
-    const now = Date.now();
-    if (now - lastFetchTime.current < 30000 && !isUsingSimulatedData) return;
-    
-    setLoadingIntel(true);
-    try {
-      const intel = await generateThreatIntel(threatType, lang);
-      setLatestIntel(intel);
-      setIsUsingSimulatedData(false);
-      lastFetchTime.current = Date.now();
-    } catch (err) {
-      // If we hit quota or any API error, switch to a simulated report
-      const fallbackPool = SIMULATED_INTEL[lang] || SIMULATED_INTEL['en'];
-      const randomFallback = fallbackPool[Math.floor(Math.random() * fallbackPool.length)];
-      setLatestIntel(randomFallback);
-      setIsUsingSimulatedData(true);
-      console.warn("API quota issues or error. Switching to Simulated Intel Feed.");
-    } finally {
-      setLoadingIntel(false);
+  // Latest alert type to trigger query
+  const latestAlertType = useMemo(() => activeAlerts[0]?.type || "Baseline Network Security", [activeAlerts]);
+
+  const { data: latestIntel, isFetching: loadingIntel, isError } = useQuery({
+    queryKey: ['threatIntel', latestAlertType, lang],
+    queryFunction: () => generateThreatIntel(latestAlertType, lang),
+    retry: 1,
+    staleTime: 30000,
+  });
+
+  // Track history of AI intel
+  useEffect(() => {
+    if (latestIntel && !intelHistory.some(item => item.title === latestIntel.title)) {
+      setIntelHistory(prev => [latestIntel, ...prev].slice(0, 3));
     }
-  }, [lang, isUsingSimulatedData]);
+  }, [latestIntel]);
+
+  // Fallback if AI fails or is loading the first time
+  const displayIntel = useMemo(() => {
+    if (latestIntel) return latestIntel;
+    const fallbackPool = SIMULATED_INTEL[lang] || SIMULATED_INTEL['en'];
+    return fallbackPool[0];
+  }, [latestIntel, lang]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -102,8 +90,7 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
         }];
       });
 
-      // Frequency control for UI activity
-      if (Math.random() > 0.85 && !loadingIntel) {
+      if (Math.random() > 0.85) {
         const alertTypes = isEs 
           ? ['Inyección SQL', 'Fuerza Bruta', 'Acceso API no autorizado', 'XSS', 'Anomalía DDoS']
           : ['SQL Injection', 'Brute Force', 'Unauthorized API Access', 'XSS', 'DDoS Anomaly'];
@@ -116,25 +103,20 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
         };
         
         setActiveAlerts(prev => [newAlert, ...prev].slice(0, 5));
-        
-        // Conditional fetch logic to prevent spamming the API
-        const timeSinceLast = Date.now() - lastFetchTime.current;
-        if (timeSinceLast > 60000 || !latestIntel) {
-          fetchIntel(type);
-        }
       }
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [lang, fetchIntel, isEs, loadingIntel, latestIntel]);
+  }, [lang, isEs]);
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Main Graph */}
         <div className="lg:col-span-2 bg-slate-900/50 border border-white/5 rounded-3xl p-6 shadow-inner relative overflow-hidden backdrop-blur-md">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-extrabold text-white flex items-center gap-2 uppercase tracking-tight">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              <Activity className="w-5 h-5 text-red-500 animate-pulse" />
               {isEs ? 'Análisis Global' : 'Global Analytics'}
             </h3>
             <div className="flex gap-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">
@@ -168,72 +150,110 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-slate-900/50 border border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden backdrop-blur-md">
+        {/* AI Feed Summary */}
+        <div className="lg:col-span-2 bg-slate-900/50 border border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden backdrop-blur-md border-l-emerald-500/20">
           <div className="absolute top-0 right-0 p-4">
-             <div className={`text-[9px] font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-[0.2em] ${loadingIntel ? 'animate-pulse' : ''}`}>
-                {isUsingSimulatedData ? 'LOCAL FEED' : 'AI FEED'}
+             <div className={`text-[9px] font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-[0.2em] flex items-center gap-2 ${loadingIntel ? 'animate-pulse' : ''}`}>
+                <Cpu size={10} />
+                {isError ? 'LOCAL CACHE' : 'AI NEURAL LINK'}
              </div>
           </div>
           
           <h3 className="text-lg font-extrabold text-white mb-6 tracking-tight flex items-center gap-2">
-            <span className="text-emerald-500">⚡</span> {isEs ? 'Reporte de Inteligencia' : 'Intelligence Report'}
+            <Zap className="text-emerald-500 w-5 h-5" /> 
+            {isEs ? 'Análisis de Red IA' : 'AI Network Analysis'}
           </h3>
 
-          <div className="min-h-[180px]">
-            {loadingIntel ? (
-              <div className="flex flex-col items-center justify-center h-full space-y-4 py-10">
+          <div className="min-h-[180px] flex flex-col justify-center">
+            {loadingIntel && !displayIntel ? (
+              <div className="flex flex-col items-center justify-center space-y-4 py-10">
                 <div className="w-8 h-8 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-                   {isEs ? 'Analizando Amenaza...' : 'Analyzing Threat...'}
+                   {isEs ? 'Escaneando Capa de Aplicación...' : 'Scanning Application Layer...'}
                 </div>
               </div>
-            ) : latestIntel ? (
-              <div className="animate-in fade-in duration-500">
+            ) : (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {latestIntel.title}
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                  {displayIntel.title}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-[9px] font-bold text-slate-600 uppercase mb-1 tracking-widest">{isEs ? 'Perfil' : 'Profile'}</div>
-                      <div className="text-xs text-slate-300 font-medium italic">&quot;{latestIntel.attackerProfile}&quot;</div>
+                      <div className="text-[9px] font-bold text-slate-600 uppercase mb-1 tracking-widest flex items-center gap-1">
+                        <Target size={10} /> {isEs ? 'Perfil del Atacante' : 'Attacker Profile'}
+                      </div>
+                      <div className="text-xs text-slate-300 font-medium italic">&quot;{displayIntel.attackerProfile}&quot;</div>
                     </div>
                     <div>
-                      <div className="text-[9px] font-bold text-slate-600 uppercase mb-1 tracking-widest">{isEs ? 'Detalle' : 'Detail'}</div>
-                      <div className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">{latestIntel.technicalDetails}</div>
+                      <div className="text-[9px] font-bold text-slate-600 uppercase mb-1 tracking-widest flex items-center gap-1">
+                        <Info size={10} /> {isEs ? 'Detalle Técnico' : 'Technical Detail'}
+                      </div>
+                      <div className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">{displayIntel.technicalDetails}</div>
                     </div>
                   </div>
-                  <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10 flex flex-col justify-center">
-                    <div className="text-[9px] font-bold text-emerald-500 uppercase mb-2 tracking-widest">
-                       {isEs ? 'CONTRAMEDIDA' : 'COUNTERMEASURE'}
+                  <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10 flex flex-col justify-center group hover:bg-emerald-500/10 transition-all cursor-crosshair">
+                    <div className="text-[9px] font-bold text-emerald-500 uppercase mb-2 tracking-widest flex items-center gap-1">
+                       <Shield size={10} /> {isEs ? 'CONTRAMEDIDA' : 'COUNTERMEASURE'}
                     </div>
                     <div className="text-xs text-white font-bold leading-relaxed">
-                       {latestIntel.recommendedCountermeasure}
+                       {displayIntel.recommendedCountermeasure}
                     </div>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-slate-600 text-[11px] font-medium py-10">
-                {isEs ? 'Esperando anomalías de red...' : 'Waiting for network anomalies...'}
-              </div>
             )}
           </div>
-          
-          {isUsingSimulatedData && (
-             <div className="mt-4 flex items-center justify-center">
-                <button 
-                  onClick={() => fetchIntel(activeAlerts[0]?.type || "Manual Request")}
-                  className="text-[8px] font-bold text-slate-500 hover:text-emerald-400 transition-colors uppercase tracking-[0.3em] bg-white/5 px-4 py-1.5 rounded-full border border-white/5"
-                >
-                  {isEs ? 'Actualizar desde la nube' : 'Refresh from Cloud'}
-                </button>
-             </div>
-          )}
         </div>
 
-        <div className="lg:col-span-4 bg-slate-900/30 border border-white/5 rounded-2xl p-4">
+        {/* NEW SECTION: AI Intelligence History Feed */}
+        <div className="lg:col-span-4 space-y-4 mt-4">
+           <div className="flex items-center justify-between">
+              <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-2">
+                <Activity size={12} className="text-emerald-500" />
+                {isEs ? 'Historial de Inteligencia Neural' : 'Neural Intelligence History'}
+              </h4>
+              <div className="h-px flex-grow bg-white/5 mx-6"></div>
+              <div className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                {intelHistory.length} {isEs ? 'REPORTES ACTIVOS' : 'ACTIVE REPORTS'}
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {intelHistory.length > 0 ? intelHistory.map((intel, idx) => (
+                <div key={idx} className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 hover:border-emerald-500/20 transition-all group relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20 group-hover:bg-emerald-500 transition-all"></div>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="text-[10px] font-bold text-white uppercase tracking-tight group-hover:text-emerald-400 transition-colors">
+                      {intel.title}
+                    </div>
+                    <span className="text-[8px] font-black text-slate-700 uppercase tracking-tighter">AI-GEN</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-relaxed mb-4 line-clamp-2 font-medium">
+                    {intel.technicalDetails}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <div className="px-2 py-0.5 rounded bg-white/5 border border-white/5 text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                      {isEs ? 'Mitigado' : 'Mitigated'}
+                    </div>
+                    <div className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[8px] font-bold uppercase tracking-widest">
+                      {isEs ? 'Confirmado' : 'Confirmed'}
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="col-span-3 py-10 text-center border border-dashed border-white/5 rounded-2xl">
+                  <div className="text-[10px] font-bold text-slate-700 uppercase tracking-[0.5em]">
+                    {isEs ? 'Iniciando Enlace Neural...' : 'Initializing Neural Link...'}
+                  </div>
+                </div>
+              )}
+           </div>
+        </div>
+
+        {/* Live Alert Ticker */}
+        <div className="lg:col-span-4 bg-slate-950/30 border border-white/5 rounded-2xl p-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
             {activeAlerts.map((alert) => (
               <div key={alert.id} className="text-[9px] font-bold p-3 bg-slate-950 border border-white/5 border-l-2 border-l-red-500 rounded-xl text-red-400/60 animate-in slide-in-from-right-2 duration-300 uppercase tracking-tight">

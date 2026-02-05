@@ -300,7 +300,9 @@ const App: React.FC = () => {
                 <path d="M6 18L18 6M6 6l12 12" strokeWidth={2} strokeLinecap="round" />
               </svg>
             </button>
-            <div className="text-7xl mb-12">{selectedService.icon}</div>
+            <div className="text-7xl mb-12 text-emerald-400">
+              <selectedService.icon size={64} strokeWidth={1.5} />
+            </div>
             <h3 className="text-4xl font-extrabold text-white mb-8 tracking-tight">{selectedService.title}</h3>
             <p className="text-slate-400 text-lg mb-12 leading-relaxed font-medium">{selectedService.longDescription}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
