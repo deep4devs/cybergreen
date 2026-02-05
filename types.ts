@@ -6,7 +6,7 @@ export interface SecurityService {
   title: string;
   description: string;
   icon: ElementType;
-  category: 'proactive' | 'reactive' | 'compliance' | 'cloud' | 'nist' | 'ai' | 'linux';
+  category: 'proactive' | 'reactive' | 'compliance' | 'cloud' | 'nist' | 'ai' | 'linux' | 'dns' | 'email' | 'identity';
   longDescription: string;
   features: string[];
 }
@@ -26,7 +26,10 @@ export enum Page {
   NIST = 'nist',
   CloudSecurity = 'cloud-security',
   AISecurity = 'ai-security',
-  LinuxSecurity = 'linux-security'
+  LinuxSecurity = 'linux-security',
+  DNSSecurity = 'dns-security',
+  EmailSecurity = 'email-security',
+  IdentitySecurity = 'identity-security'
 }
 
 export type Language = 'es' | 'en';

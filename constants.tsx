@@ -1,7 +1,7 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu
+  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu, Globe, Mail, Fingerprint, Lock, ShieldAlert, Key, UserCheck, Search
 } from 'lucide-react';
 
 export const getServices = (lang: Language): SecurityService[] => {
@@ -87,6 +87,33 @@ export const getServices = (lang: Language): SecurityService[] => {
       category: 'linux',
       longDescription: isEs ? 'Especialistas en endurecimiento de SUSE Linux Enterprise (SLES), configuración de DNS recursivo seguro y migración de infraestructuras críticas desde entornos comerciales como VMware y Hyper-V.' : 'Specialists in SUSE Linux Enterprise (SLES) hardening, secure recursive DNS configuration, and critical infrastructure migration from commercial environments like VMware and Hyper-V.',
       features: isEs ? ['Hardening SUSE SLES', 'DNS recursivo DNSSEC', 'Migración VMware/Hyper-V', 'Virtualización KVM/Xen'] : ['SUSE SLES Hardening', 'DNSSEC Recursive DNS', 'VMware/Hyper-V Migration', 'KVM/Xen Virtualization']
+    },
+    {
+      id: 'dns-01',
+      title: isEs ? 'Protección DNS Proactiva' : 'Proactive DNS Protection',
+      description: isEs ? 'Defensa contra secuestro de dominios y envenenamiento de caché.' : 'Defense against domain hijacking and cache poisoning.',
+      icon: Globe,
+      category: 'dns',
+      longDescription: isEs ? 'Blindamos su infraestructura de resolución de nombres con DNSSEC, firewalls DNS y monitoreo de integridad de zona.' : 'We shield your name resolution infrastructure with DNSSEC, DNS firewalls, and zone integrity monitoring.',
+      features: isEs ? ['DNSSEC Dinámico', 'Mitigación DDoS DNS', 'Filtrado de Dominios', 'Auditoría de Registros'] : ['Dynamic DNSSEC', 'DNS DDoS Mitigation', 'Domain Filtering', 'Record Auditing']
+    },
+    {
+      id: 'email-01',
+      title: isEs ? 'Blindaje de Correo' : 'Email Shielding',
+      description: isEs ? 'Defensa avanzada contra phishing, malware y fuga de datos.' : 'Advanced defense against phishing, malware, and data leakage.',
+      icon: Mail,
+      category: 'email',
+      longDescription: isEs ? 'Implementación de gateways de correo seguros, políticas DMARC/SPF/DKIM y análisis neural de adjuntos.' : 'Implementation of secure email gateways, DMARC/SPF/DKIM policies, and neural attachment analysis.',
+      features: isEs ? ['Anti-Phishing IA', 'DMARC Enforcement', 'Cifrado de Extremo a Extremo', 'Sandboxing de Adjuntos'] : ['AI Anti-Phishing', 'DMARC Enforcement', 'End-to-End Encryption', 'Attachment Sandboxing']
+    },
+    {
+      id: 'id-01',
+      title: isEs ? 'Gestión de Identidad (IAM)' : 'Identity Management (IAM)',
+      description: isEs ? 'Arquitectura Zero Trust y control de acceso adaptativo.' : 'Zero Trust architecture and adaptive access control.',
+      icon: Fingerprint,
+      category: 'identity',
+      longDescription: isEs ? 'Protegemos el perímetro de identidad mediante MFA robusto, Single Sign-On (SSO) y análisis de comportamiento de usuario.' : 'We protect the identity perimeter through robust MFA, Single Sign-On (SSO), and user behavior analytics.',
+      features: isEs ? ['MFA Biométrico', 'SSO Centralizado', 'Privileged Access Mgmt', 'Zero Trust Network Access'] : ['Biometric MFA', 'Centralized SSO', 'Privileged Access Mgmt', 'Zero Trust Network Access']
     }
   ];
 };
@@ -95,7 +122,7 @@ export const TRANSLATIONS = {
   es: {
     heroTitle: 'CYBERSEGURIDAD',
     heroFuture: 'AVANZADA',
-    heroDesc: 'Servicios de Cyberseguridad Avanzada con integraciones de AI preventiva para una protección total de infraestructuras críticas.',
+    heroDesc: 'Servicios de Cyberseguridad Avanzada con integraciones de IA preventiva para una protección total de infraestructuras críticas.',
     slogan: 'Digital AI Security for Business Resilience and Profitability',
     aboutTitle: 'Líderes con Experiencia',
     aboutDesc: 'Somos una empresa con más de 20 años de experiencia en ciberseguridad, comprometida con la excelencia técnica y la protección de activos globales.',
@@ -125,6 +152,9 @@ export const TRANSLATIONS = {
     navCloud: 'Seguridad Nube',
     navAI: 'Seguridad IA',
     navLinux: 'Linux Hardening',
+    navDNS: 'Seguridad DNS',
+    navEmail: 'Seguridad Email',
+    navIdentity: 'Seguridad Identidad',
     login: 'Acceso Clientes',
     footerDesc: 'Protección especializada para activos digitales e infraestructura crítica.',
     legal: 'Legal',
@@ -137,7 +167,13 @@ export const TRANSLATIONS = {
     aiTitle: 'Blindaje para Inteligencia Artificial',
     aiDesc: 'Estrategias de defensa para la nueva frontera de las amenazas automatizadas.',
     linuxTitle: 'The Linux Hardening (SUSE)',
-    linuxDesc: 'Servicios especializados en SUSE Linux, DNS seguro y migración de virtualización propietaria a entornos endurecidos.',
+    linuxDesc: 'Servicios especializados en SUSE Linux, DNS seguro y migración de virtualización propietaria.',
+    dnsTitle: 'Seguridad DNS & Perímetro',
+    dnsDesc: 'Blindaje de la capa de resolución para prevenir ataques de redirección y exfiltración.',
+    emailTitle: 'Defensa de Mensajería Crítica',
+    emailDesc: 'Protección total para el vector de ataque más explotado: el correo electrónico.',
+    identityTitle: 'Identidad & Zero Trust',
+    identityDesc: 'Asegurando que solo las personas correctas accedan a los recursos correctos.',
     initDeployment: 'Iniciar Despliegue',
     requestInfo: 'Solicitar Información'
   },
@@ -174,6 +210,9 @@ export const TRANSLATIONS = {
     navCloud: 'Cloud Security',
     navAI: 'AI Security',
     navLinux: 'Linux Hardening',
+    navDNS: 'DNS Security',
+    navEmail: 'Email Security',
+    navIdentity: 'Identity Security',
     login: 'Client Login',
     footerDesc: 'Specialized protection for digital assets and critical infrastructure.',
     legal: 'Legal',
@@ -186,7 +225,13 @@ export const TRANSLATIONS = {
     aiTitle: 'Artificial Intelligence Shielding',
     aiDesc: 'Defense strategies for the new frontier of automated threats.',
     linuxTitle: 'The Linux Hardening (SUSE)',
-    linuxDesc: 'Specialized services in SUSE Linux, secure DNS, and migration from proprietary virtualization to hardened environments.',
+    linuxDesc: 'Specialized services in SUSE Linux, secure DNS, and proprietary virtualization migration.',
+    dnsTitle: 'DNS & Perimeter Security',
+    dnsDesc: 'Shielding the resolution layer to prevent redirection and exfiltration attacks.',
+    emailTitle: 'Critical Messaging Defense',
+    emailDesc: 'Total protection for the most exploited attack vector: email.',
+    identityTitle: 'Identity & Zero Trust',
+    identityDesc: 'Ensuring only the right people access the right resources.',
     initDeployment: 'Initiate Deployment',
     requestInfo: 'Request Information'
   }

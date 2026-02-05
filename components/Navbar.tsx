@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Page, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
+import { ChevronDown, Shield, Globe, Lock, Cpu, Activity, LayoutGrid } from 'lucide-react';
 
 interface NavbarProps {
   currentPage: Page;
@@ -10,9 +11,17 @@ interface NavbarProps {
   onLangToggle: () => void;
 }
 
+interface NavItem {
+  label: string;
+  id?: Page;
+  children?: { label: string; id: Page; icon: React.ElementType }[];
+}
+
 const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLangToggle }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const t = TRANSLATIONS[lang];
 
   useEffect(() => {
@@ -21,21 +30,44 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLang
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const menuItems = [
-    { name: t.navHome, id: Page.Home },
-    { name: t.navServices, id: Page.Services },
-    { name: t.navNIST, id: Page.NIST },
-    { name: t.navCloud, id: Page.CloudSecurity },
-    { name: t.navLinux, id: Page.LinuxSecurity },
-    { name: t.navAI, id: Page.AISecurity },
-    { name: t.navAdvisor, id: Page.Advisor },
-    { name: t.navMonitor, id: Page.Monitor },
+  const navStructure: NavItem[] = [
+    { label: t.navHome, id: Page.Home },
+    { 
+      label: lang === 'es' ? 'Soluciones' : 'Solutions', 
+      children: [
+        { label: t.navServices, id: Page.Services, icon: LayoutGrid },
+        { label: t.navLinux, id: Page.LinuxSecurity, icon: Shield },
+        { label: t.navIdentity, id: Page.IdentitySecurity, icon: Lock },
+      ]
+    },
+    { 
+      label: lang === 'es' ? 'Infraestructura' : 'Infrastructure', 
+      children: [
+        { label: t.navCloud, id: Page.CloudSecurity, icon: Globe },
+        { label: t.navDNS, id: Page.DNSSecurity, icon: Shield },
+        { label: t.navEmail, id: Page.EmailSecurity, icon: Lock },
+      ]
+    },
+    { 
+      label: lang === 'es' ? 'Cumplimiento & IA' : 'Compliance & AI', 
+      children: [
+        { label: t.navNIST, id: Page.NIST, icon: Shield },
+        { label: t.navAI, id: Page.AISecurity, icon: Cpu },
+        { label: t.navAdvisor, id: Page.Advisor, icon: Cpu },
+      ]
+    },
+    { label: t.navMonitor, id: Page.Monitor },
   ];
 
   const handleNavClick = (id: Page) => {
     onPageChange(id);
     setIsMobileMenuOpen(false);
+    setActiveDropdown(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const toggleMobileExpanded = (label: string) => {
+    setMobileExpanded(mobileExpanded === label ? null : label);
   };
 
   return (
@@ -58,22 +90,48 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLang
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 relative ${
-                  currentPage === item.id 
-                    ? 'text-emerald-400 bg-emerald-500/5' 
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
+          <div className="hidden lg:flex items-center gap-2">
+            {navStructure.map((item) => (
+              <div 
+                key={item.label}
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown(item.label)}
+                onMouseLeave={() => setActiveDropdown(null)}
               >
-                {item.name}
-                {currentPage === item.id && (
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-emerald-500 rounded-full"></div>
+                <button
+                  onClick={() => item.id && handleNavClick(item.id)}
+                  className={`px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 ${
+                    (item.id === currentPage || item.children?.some(c => c.id === currentPage))
+                      ? 'text-emerald-400 bg-emerald-500/5' 
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {item.label}
+                  {item.children && <ChevronDown size={12} className={`transition-transform duration-300 ${activeDropdown === item.label ? 'rotate-180' : ''}`} />}
+                </button>
+
+                {/* Dropdown Menu */}
+                {item.children && activeDropdown === item.label && (
+                  <div className="absolute top-full left-0 pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl shadow-3xl min-w-[240px] overflow-hidden p-2">
+                      {item.children.map((child) => (
+                        <button
+                          key={child.id}
+                          onClick={() => handleNavClick(child.id)}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                            currentPage === child.id 
+                              ? 'bg-emerald-500/10 text-emerald-400' 
+                              : 'text-slate-400 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <child.icon size={16} className={currentPage === child.id ? 'text-emerald-400' : 'text-slate-600'} />
+                          <span className="text-[10px] font-bold uppercase tracking-widest">{child.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
-              </button>
+              </div>
             ))}
           </div>
 
@@ -109,18 +167,46 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLang
 
       {/* Mobile Navigation Overlay */}
       <div className={`lg:hidden fixed inset-0 z-[-1] transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`}>
-        <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-2xl"></div>
-        <div className="relative pt-32 px-8 flex flex-col gap-4">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item.id)}
-              className={`w-full text-left py-4 px-6 rounded-2xl text-lg font-bold uppercase tracking-widest transition-all ${
-                currentPage === item.id ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {item.name}
-            </button>
+        <div className="absolute inset-0 bg-slate-950/98 backdrop-blur-3xl"></div>
+        <div className="relative pt-32 px-6 flex flex-col gap-2 max-h-screen overflow-y-auto pb-20">
+          {navStructure.map((item) => (
+            <div key={item.label} className="w-full">
+              {item.children ? (
+                <>
+                  <button
+                    onClick={() => toggleMobileExpanded(item.label)}
+                    className="w-full flex items-center justify-between py-4 px-6 rounded-2xl text-lg font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5"
+                  >
+                    {item.label}
+                    <ChevronDown size={20} className={`transition-transform duration-300 ${mobileExpanded === item.label ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileExpanded === item.label && (
+                    <div className="pl-6 space-y-1 mt-1 animate-in slide-in-from-top-2">
+                      {item.children.map((child) => (
+                        <button
+                          key={child.id}
+                          onClick={() => handleNavClick(child.id)}
+                          className={`w-full text-left py-3 px-6 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all ${
+                            currentPage === child.id ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500 hover:text-white'
+                          }`}
+                        >
+                          {child.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <button
+                  onClick={() => item.id && handleNavClick(item.id)}
+                  className={`w-full text-left py-4 px-6 rounded-2xl text-lg font-bold uppercase tracking-widest transition-all ${
+                    currentPage === item.id ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )}
+            </div>
           ))}
           <div className="mt-8 pt-8 border-t border-white/5">
              <button className="w-full bg-emerald-500 text-white py-5 rounded-2xl font-black uppercase tracking-widest">

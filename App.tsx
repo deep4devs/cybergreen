@@ -7,7 +7,11 @@ import AISecurityAdvisor from './components/AISecurityAdvisor';
 import ContactModal from './components/ContactModal';
 import { Page, SecurityService, Language } from './types';
 import { getServices, TRANSLATIONS } from './constants';
-import { ShieldCheck, Target, Eye, Gem, Award, Terminal, Network, Layers, Repeat } from 'lucide-react';
+// Added missing Package icon to imports
+import { 
+  ShieldCheck, Target, Eye, Gem, Award, Terminal, Network, Layers, Repeat, 
+  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package
+} from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
@@ -70,7 +74,7 @@ const App: React.FC = () => {
               </div>
             </header>
 
-            {/* Corporate Profile Section (20 Years Experience) */}
+            {/* Experience Section */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="relative group">
                 <div className="absolute -inset-4 bg-emerald-500/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
@@ -98,7 +102,6 @@ const App: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6">
-                {/* Mission Card */}
                 <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] hover:bg-white/[0.04] transition-all group">
                    <div className="flex items-start gap-6">
                       <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0 group-hover:scale-110 transition-transform">
@@ -110,7 +113,6 @@ const App: React.FC = () => {
                       </div>
                    </div>
                 </div>
-                {/* Vision Card */}
                 <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] hover:bg-white/[0.04] transition-all group">
                    <div className="flex items-start gap-6">
                       <div className="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-500 shrink-0 group-hover:scale-110 transition-transform">
@@ -125,26 +127,6 @@ const App: React.FC = () => {
               </div>
             </section>
 
-            {/* Values Section */}
-            <section>
-              <div className="text-center mb-16">
-                 <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight">{t.valuesTitle}</h2>
-                 <div className="h-1 w-20 bg-emerald-500 mx-auto rounded-full"></div>
-              </div>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                {(t.valuesList as string[]).map((val, idx) => (
-                  <div key={idx} className="bg-slate-900/50 border border-white/5 p-10 rounded-[2.5rem] text-center group hover:border-emerald-500/30 transition-all">
-                     <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 mx-auto mb-6 group-hover:rotate-12 transition-transform">
-                       <Gem size={20} />
-                     </div>
-                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover:text-white transition-colors">
-                       {val}
-                     </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
             {/* SOC Section */}
             <section className="glass p-8 sm:p-12 rounded-[3rem] shadow-3xl">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">
@@ -155,20 +137,6 @@ const App: React.FC = () => {
                 </div>
               </div>
               <ThreatMonitor lang={lang} />
-            </section>
-
-            {/* Stats Summary */}
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10">
-              {[
-                { label: t.statThreat, value: '99.9%', color: 'text-emerald-500' },
-                { label: t.statResponse, value: '5min', color: 'text-cyan-400' },
-                { label: t.statGuard, value: '24/7', color: 'text-white' }
-              ].map((stat, i) => (
-                <div key={i} className="bg-white/[0.02] border border-white/5 p-12 rounded-[2.5rem] text-center group transition-all hover:bg-white/[0.04] hover:border-emerald-500/20">
-                  <div className={`text-5xl font-extrabold mb-4 ${stat.color}`}>{stat.value}</div>
-                  <div className="text-slate-500 font-extrabold text-[10px] uppercase tracking-[0.2em]">{stat.label}</div>
-                </div>
-              ))}
             </section>
           </div>
         );
@@ -186,6 +154,152 @@ const App: React.FC = () => {
                 services={allServices} 
                 lang={lang} 
             />
+          </div>
+        );
+
+      case Page.DNSSecurity:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="text-blue-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Network Edge Defense</div>
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.dnsTitle}</h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.dnsDesc}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: 'DNSSEC Enforcement', desc: isEs ? 'Cifrado de registros y validación de autenticidad.' : 'Record encryption and authenticity validation.', icon: Lock },
+                 { title: 'DDoS Mitigation', desc: isEs ? 'Absorción de inundaciones UDP en la capa DNS.' : 'UDP flood absorption at the DNS layer.', icon: ShieldAlert },
+                 { title: 'Content Filtering', desc: isEs ? 'Bloqueo de dominios maliciosos a nivel recursivo.' : 'Malicious domain blocking at recursive level.', icon: Search },
+                 { title: 'Anycast Routing', desc: isEs ? 'Disponibilidad global mediante enrutamiento Anycast.' : 'Global availability via Anycast routing.', icon: Globe },
+               ].map((item, i) => (
+                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-blue-500/30 transition-all">
+                    <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+                 </div>
+               ))}
+            </div>
+            <div className="pt-16">
+               <ServiceGrid 
+                  onSelect={setSelectedService} 
+                  onRequestQuote={(service) => openContact(service.title)} 
+                  services={allServices.filter(s => s.category === 'dns')} 
+                  lang={lang} 
+               />
+            </div>
+          </div>
+        );
+
+      case Page.EmailSecurity:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="text-cyan-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Critical Vector Defense</div>
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.emailTitle}</h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.emailDesc}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: 'Anti-Phishing', desc: isEs ? 'Detección de suplantación mediante IA neural.' : 'Impersonation detection via neural AI.', icon: Target },
+                 { title: 'DMARC Suite', desc: isEs ? 'Configuración SPF, DKIM y DMARC a nivel global.' : 'Global SPF, DKIM, and DMARC configuration.', icon: ShieldCheck },
+                 { title: 'Sandbox Analysis', desc: isEs ? 'Ejecución segura de adjuntos sospechosos.' : 'Safe execution of suspicious attachments.', icon: Package },
+                 { title: 'Data Loss Prev.', desc: isEs ? 'Prevención de fuga de información sensible (DLP).' : 'Prevention of sensitive data leakage (DLP).', icon: Search },
+               ].map((item, i) => (
+                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-cyan-500/30 transition-all">
+                    <div className="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+                 </div>
+               ))}
+            </div>
+            <div className="pt-16">
+               <ServiceGrid 
+                  onSelect={setSelectedService} 
+                  onRequestQuote={(service) => openContact(service.title)} 
+                  services={allServices.filter(s => s.category === 'email')} 
+                  lang={lang} 
+               />
+            </div>
+          </div>
+        );
+
+      case Page.IdentitySecurity:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="text-fuchsia-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Zero Trust Perimeter</div>
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.identityTitle}</h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.identityDesc}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: 'Biometric MFA', desc: isEs ? 'Autenticación multifactor sin contraseñas.' : 'Passwordless multi-factor authentication.', icon: Fingerprint },
+                 { title: 'SSO Federated', desc: isEs ? 'Acceso único centralizado y seguro (SAML/OIDC).' : 'Centralized secure single access (SAML/OIDC).', icon: UserCheck },
+                 { title: 'PAM Controls', desc: isEs ? 'Gestión de cuentas con privilegios elevados.' : 'Management of highly privileged accounts.', icon: Key },
+                 { title: 'Adaptive Access', desc: isEs ? 'Políticas basadas en riesgo y contexto.' : 'Context and risk-based policies.', icon: Lock },
+               ].map((item, i) => (
+                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-fuchsia-500/30 transition-all">
+                    <div className="w-12 h-12 bg-fuchsia-500/10 rounded-2xl flex items-center justify-center text-fuchsia-400 mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+                 </div>
+               ))}
+            </div>
+            <div className="pt-16">
+               <ServiceGrid 
+                  onSelect={setSelectedService} 
+                  onRequestQuote={(service) => openContact(service.title)} 
+                  services={allServices.filter(s => s.category === 'identity')} 
+                  lang={lang} 
+               />
+            </div>
+          </div>
+        );
+
+      case Page.LinuxSecurity:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="text-emerald-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Hardening Experts</div>
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.linuxTitle}</h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.linuxDesc}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: 'SUSE Hardening', desc: isEs ? 'Configuración de seguridad profunda para SLES 15+.' : 'Deep security configuration for SLES 15+.', icon: Terminal },
+                 { title: 'Secure DNS', desc: isEs ? 'DNS recursivo con DNSSEC y filtrado avanzado.' : 'Recursive DNS with DNSSEC and advanced filtering.', icon: Network },
+                 { title: 'Virtualization', desc: isEs ? 'KVM y Xen endurecidos para cargas críticas.' : 'Hardened KVM and Xen for critical workloads.', icon: Layers },
+                 { title: 'Migration', desc: isEs ? 'Transición segura desde VMware y Hyper-V.' : 'Secure transition from VMware and Hyper-V.', icon: Repeat },
+               ].map((item, i) => (
+                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-emerald-500/30 transition-all">
+                    <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
+                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+                 </div>
+               ))}
+            </div>
+            <div className="bg-emerald-500/5 border border-emerald-500/10 p-12 rounded-[3rem] text-center">
+               <h3 className="text-2xl font-bold text-white mb-8">{isEs ? 'Puente de Migración Empresarial' : 'Enterprise Migration Bridge'}</h3>
+               <div className="flex flex-wrap justify-center gap-6 mb-12">
+                  {['VMware ESXi', 'Microsoft Hyper-V', 'Citrix Hypervisor', 'Oracle VM'].map(v => (
+                    <div key={v} className="px-6 py-3 bg-slate-900 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{v} → SUSE/KVM</div>
+                  ))}
+               </div>
+               <ServiceGrid 
+                  onSelect={setSelectedService} 
+                  onRequestQuote={(service) => openContact(service.title)} 
+                  services={allServices.filter(s => s.category === 'linux')} 
+                  lang={lang} 
+               />
+            </div>
           </div>
         );
 
@@ -248,49 +362,6 @@ const App: React.FC = () => {
           </div>
         );
 
-      case Page.LinuxSecurity:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-emerald-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Hardening Experts</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.linuxTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.linuxDesc}</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: isEs ? 'SUSE Hardening' : 'SUSE Hardening', desc: isEs ? 'Configuración de seguridad profunda para SLES 15+.' : 'Deep security configuration for SLES 15+.', icon: Terminal },
-                 { title: isEs ? 'DNS Seguro' : 'Secure DNS', desc: isEs ? 'DNS recursivo con DNSSEC y filtrado avanzado.' : 'Recursive DNS with DNSSEC and advanced filtering.', icon: Network },
-                 { title: isEs ? 'Virtualización' : 'Virtualization', desc: isEs ? 'KVM y Xen endurecidos para cargas críticas.' : 'Hardened KVM and Xen for critical workloads.', icon: Layers },
-                 { title: isEs ? 'Migración' : 'Migration', desc: isEs ? 'Transición segura desde VMware y Hyper-V.' : 'Secure transition from VMware and Hyper-V.', icon: Repeat },
-               ].map((item, i) => (
-                 <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-emerald-500/30 transition-all">
-                    <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
-                      <item.icon size={24} />
-                    </div>
-                    <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
-                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
-                 </div>
-               ))}
-            </div>
-
-            <div className="bg-emerald-500/5 border border-emerald-500/10 p-12 rounded-[3rem] text-center">
-               <h3 className="text-2xl font-bold text-white mb-8">{isEs ? 'Puente de Migración Empresarial' : 'Enterprise Migration Bridge'}</h3>
-               <div className="flex flex-wrap justify-center gap-6 mb-12">
-                  {['VMware ESXi', 'Microsoft Hyper-V', 'Citrix Hypervisor', 'Oracle VM'].map(v => (
-                    <div key={v} className="px-6 py-3 bg-slate-900 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{v} → SUSE/KVM</div>
-                  ))}
-               </div>
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'linux')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
       case Page.AISecurity:
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4">
@@ -305,8 +376,8 @@ const App: React.FC = () => {
                 <h3 className="text-2xl font-extrabold text-white mb-4">Prompt Guard</h3>
                 <p className="text-slate-400 text-sm leading-relaxed font-medium">
                   {lang === 'es' 
-                    ? 'Algoritmos de detección en tiempo real para filtrar inyecciones de prompts maliciosos y proteger la integridad del modelo.' 
-                    : 'Real-time detection algorithms to filter malicious prompt injections and protect model integrity.'}
+                    ? 'Algoritmos de detección en tiempo real para filtrar inyecciones de prompts maliciosos.' 
+                    : 'Real-time detection algorithms to filter malicious prompt injections.'}
                 </p>
               </div>
               <div className="bg-white/5 border border-white/10 p-12 rounded-[2.5rem] group hover:border-fuchsia-500/30 transition-all">
@@ -407,7 +478,7 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Modal de Detalle */}
+      {/* Detail Modal */}
       {selectedService && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="bg-[#0f172a] border border-white/10 rounded-[3rem] w-full max-w-3xl p-12 relative shadow-4xl overflow-hidden max-h-[90vh] overflow-y-auto no-scrollbar">
