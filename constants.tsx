@@ -56,7 +56,7 @@ export const getServices = (lang: Language): SecurityService[] => {
       icon: '🤖',
       category: 'ai',
       longDescription: isEs ? 'Aseguramos que sus modelos de lenguaje no sean manipulados ni filtren información confidencial.' : 'We ensure your language models are not manipulated and do not leak confidential information.',
-      features: ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection']
+      features: isEs ? ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection'] : ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection']
     },
     {
       id: 'ai-02',
@@ -74,7 +74,7 @@ export const getServices = (lang: Language): SecurityService[] => {
        icon: '🚨',
        category: 'reactive',
        longDescription: isEs ? 'Nuestro equipo de élite se despliega para neutralizar amenazas y restaurar la integridad del sistema.' : 'Our elite team deploys to neutralize threats and restore system integrity.',
-       features: isEs ? ['Forense Digital', 'Remediación', 'Cacería de Amenazas'] : ['Digital Forensics', 'Remediación', 'Threat Hunting']
+       features: isEs ? ['Forense Digital', 'Remediación', 'Cacería de Amenazas'] : ['Digital Forensics', 'Remediation', 'Threat Hunting']
     }
   ];
 };
