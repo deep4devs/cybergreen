@@ -7,9 +7,11 @@ import AISecurityAdvisor from './components/AISecurityAdvisor.tsx';
 import ContactModal from './components/ContactModal.tsx';
 import { Page, SecurityService, Language } from './types.ts';
 import { getServices, TRANSLATIONS } from './constants.tsx';
+import { useQuery } from '@tanstack/react-query';
+import { getIsraelCyberNotices, ResourceNotice } from './services/geminiService.ts';
 import { 
   ShieldCheck, Target, Eye, Award, Terminal, Network, Layers, Repeat, 
-  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio, UserPlus, Info
+  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio, UserPlus, Info, BookOpen, ExternalLink, Calendar, Zap, MessageSquare, Cloud, Database
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -35,7 +37,13 @@ const App: React.FC = () => {
     setContactServiceTitle(undefined);
   };
 
-  const FeatureCard = ({ item, colorClass }: { item: any, colorClass: string }) => (
+  const { data: notices, isLoading: loadingNotices, error: noticesError } = useQuery<ResourceNotice[]>({
+    queryKey: ['israelNotices', lang],
+    queryFn: () => getIsraelCyberNotices(lang),
+    enabled: currentPage === Page.Resource,
+  });
+
+  const FeatureCard: React.FC<{ item: any; colorClass: string }> = ({ item, colorClass }) => (
     <div className={`bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-${colorClass} transition-all flex flex-col relative overflow-hidden`}>
       <div className={`absolute top-0 right-0 w-24 h-24 bg-${colorClass}/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity`}></div>
       <div className={`w-12 h-12 bg-${colorClass}/10 rounded-2xl flex items-center justify-center text-${colorClass} mb-6 group-hover:scale-110 transition-transform relative z-10`}>
@@ -162,6 +170,169 @@ const App: React.FC = () => {
           </div>
         );
 
+      case Page.Resource:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4 max-w-6xl mx-auto pb-20">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/5 border border-blue-500/10 text-blue-500 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-8">
+                <Globe size={12} /> Global Intelligence Hub
+              </div>
+              <h2 className="text-5xl font-black text-white mb-6 tracking-tight uppercase">
+                {t.resourceTitle}
+              </h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-3xl mx-auto">
+                {t.resourceDesc}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+              {loadingNotices ? (
+                <div className="flex flex-col items-center justify-center py-32 gap-6">
+                  <div className="w-16 h-16 border-4 border-blue-500/10 border-t-blue-500 rounded-full animate-spin"></div>
+                  <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] animate-pulse">Syncing with Tel Aviv Tech Feed...</p>
+                </div>
+              ) : noticesError ? (
+                <div className="p-12 text-center bg-red-500/5 border border-red-500/20 rounded-[3rem]">
+                  <ShieldAlert className="mx-auto text-red-500 mb-6" size={48} />
+                  <p className="text-red-400 font-bold uppercase tracking-widest text-xs">Intelligence stream interrupted. Please retry.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {notices?.map((notice, i) => (
+                    <div key={i} className="group bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 relative overflow-hidden transition-all hover:border-blue-500/30 hover:shadow-2xl">
+                      <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                         <BookOpen size={64} className="text-blue-500" />
+                      </div>
+                      <div className="flex justify-between items-start mb-8 relative z-10">
+                        <div className="space-y-2">
+                           <div className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">{notice.firm}</div>
+                           <div className="flex items-center gap-3 text-slate-500 text-[9px] font-bold uppercase tracking-widest">
+                              <Calendar size={10} /> {notice.date}
+                           </div>
+                        </div>
+                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black border uppercase tracking-widest ${
+                          notice.impact === 'Critical' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 
+                          notice.impact === 'High' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
+                          'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                        }`}>
+                          {notice.impact} IMPACT
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-black text-white mb-4 group-hover:text-blue-400 transition-colors">{notice.title}</h3>
+                      <p className="text-slate-400 text-sm leading-relaxed font-medium mb-10">
+                        {notice.summary}
+                      </p>
+                      {notice.link && (
+                        <a 
+                          href={notice.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] group/link"
+                        >
+                          Read Full Briefing <ExternalLink size={12} className="group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
+      case Page.CloudSecurity:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="text-blue-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Multi-Cloud Defense</div>
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.cloudTitle}</h2>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.cloudDesc}</p>
+            </div>
+
+            {/* CNAPP Section */}
+            <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
+              <div className="flex flex-col md:flex-row gap-12 items-center">
+                <div className="w-full md:w-1/2 space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest">
+                    <Layers size={12} /> Next-Gen Cloud Protection
+                  </div>
+                  <h3 className="text-3xl font-extrabold text-white">CNAPP Elite Suite</h3>
+                  <p className="text-slate-400 leading-relaxed font-medium">
+                    {isEs 
+                      ? 'Nuestra plataforma unificada CNAPP proporciona visibilidad continua y protección de cargas de trabajo en AWS, Azure y GCP.'
+                      : 'Our unified CNAPP platform provides continuous visibility and workload protection across AWS, Azure, and GCP.'}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                     {[
+                       { label: 'CSPM', desc: isEs ? 'Gestión de Postura' : 'Posture Management' },
+                       { label: 'CWPP', desc: isEs ? 'Protección Cargas' : 'Workload Protection' },
+                       { label: 'CIEM', desc: isEs ? 'Gestión Identidad' : 'Identity Mgmt' },
+                       { label: 'KSPM', desc: isEs ? 'Seguridad K8s' : 'K8s Security' },
+                     ].map((feat, idx) => (
+                       <div key={idx} className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                          <div className="text-blue-400 font-black text-xs mb-1">{feat.label}</div>
+                          <div className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">{feat.desc}</div>
+                       </div>
+                     ))}
+                  </div>
+                </div>
+                <div className="w-full md:w-1/2 bg-slate-950 p-8 rounded-[2.5rem] border border-white/10 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl"></div>
+                  <div className="space-y-6 relative z-10">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Security Posture Dashboard</span>
+                      <span className="text-emerald-500 font-bold text-[10px] uppercase flex items-center gap-1.5">
+                        <Activity size={10} /> Healthy
+                      </span>
+                    </div>
+                    <div className="space-y-4">
+                       <div className="flex justify-between items-end">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">Risk Index</span>
+                          <span className="text-2xl font-black text-white">0.04 <span className="text-[10px] text-emerald-500 font-black uppercase">↓ 12%</span></span>
+                       </div>
+                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-blue-500 w-[15%]"></div>
+                       </div>
+                    </div>
+                    <div className="space-y-3">
+                       {[
+                         { name: 'S3 Buckets Public', val: '0', status: 'Safe' },
+                         { name: 'Overprivileged IAM', val: '4', status: 'Action' },
+                         { name: 'Container Vulns', val: '12', status: 'High' }
+                       ].map((stat, i) => (
+                         <div key={i} className="flex justify-between items-center p-3 bg-white/[0.03] rounded-xl">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">{stat.name}</span>
+                            <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border border-white/5 ${stat.status === 'Safe' ? 'text-emerald-500' : 'text-rose-500'}`}>{stat.val}</span>
+                         </div>
+                       ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+               {[
+                 { title: 'Inmutable Infrastructure', desc: isEs ? 'Infraestructura como Código segura y validada.' : 'Secure and validated Infrastructure as Code.', icon: Terminal },
+                 { title: 'Zero-Trust Networking', desc: isEs ? 'Microsegmentación para cargas de trabajo nube.' : 'Microsegmentation for cloud workloads.', icon: Network },
+                 { title: 'Serverless Protection', desc: isEs ? 'Seguridad para funciones AWS Lambda y Azure Functions.' : 'Security for AWS Lambda and Azure Functions.', icon: Cpu },
+                 { title: 'Database Encryption', desc: isEs ? 'Cifrado robusto para bases de datos distribuidas.' : 'Robust encryption for distributed databases.', icon: Database },
+               ].map((item, i) => (
+                 <FeatureCard key={i} item={item} colorClass="blue-500" />
+               ))}
+            </div>
+
+            <div className="pt-16">
+               <ServiceGrid 
+                  onSelect={setSelectedService} 
+                  onRequestQuote={(service) => openContact(service.title)} 
+                  services={allServices.filter(s => s.category === 'cloud')} 
+                  lang={lang} 
+               />
+            </div>
+          </div>
+        );
+
       case Page.EmailSecurity:
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4">
@@ -171,7 +342,6 @@ const App: React.FC = () => {
               <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.emailDesc}</p>
             </div>
 
-            {/* Simulated Email Intel Section */}
             <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
               <div className="flex flex-col md:flex-row gap-12 items-center">
                 <div className="w-full md:w-1/2 space-y-6">
@@ -181,8 +351,8 @@ const App: React.FC = () => {
                   <h3 className="text-3xl font-extrabold text-white">{isEs ? 'Reputación de Contactos' : 'Contact Reputation Engine'}</h3>
                   <p className="text-slate-400 leading-relaxed font-medium">
                     {isEs 
-                      ? 'Nuestra IA analiza automáticamente a los remitentes externos basándose en la edad del dominio, configuraciones DMARC y patrones de comportamiento histórico. Evita ataques de Business Email Compromise (BEC) antes de que lleguen a tu bandeja.'
-                      : 'Our AI automatically analyzes external senders based on domain age, DMARC settings, and historical behavior patterns. Prevent Business Email Compromise (BEC) attacks before they reach your inbox.'}
+                      ? 'Nuestra IA analiza automáticamente a los remitentes externos basándose en la edad del dominio, configuraciones DMARC y patrones de comportamiento histórico.'
+                      : 'Our AI automatically analyzes external senders based on domain age, DMARC settings, and historical behavior patterns.'}
                   </p>
                   <div className="p-6 bg-slate-950/50 rounded-2xl border border-white/5 border-dashed">
                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -190,8 +360,8 @@ const App: React.FC = () => {
                     </p>
                     <p className="text-xs text-slate-400 italic font-medium leading-loose">
                       {isEs 
-                        ? 'Integramos APIs de inteligencia como Abnormal Security o Mimecast para obtener un perfil de riesgo completo de cada contacto de correo externo.' 
-                        : 'We integrate intelligence APIs like Abnormal Security or Mimecast to obtain a complete risk profile for every external email contact.'}
+                        ? 'Integramos APIs de inteligencia como Abnormal Security o Mimecast.' 
+                        : 'We integrate intelligence APIs like Abnormal Security or Mimecast.'}
                     </p>
                   </div>
                 </div>
@@ -252,16 +422,27 @@ const App: React.FC = () => {
         );
 
       case Page.NIST:
+        const nistPhases = [
+          { phase: 'Identify', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { phase: 'Protect', icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { phase: 'Detect', icon: Zap, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+          { phase: 'Respond', icon: MessageSquare, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+          { phase: 'Recover', icon: Repeat, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+        ];
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.nistTitle}</h2>
               <p className="text-slate-400 text-lg leading-relaxed font-medium">{t.nistDesc}</p>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              {['Identify', 'Protect', 'Detect', 'Respond', 'Recover'].map((phase, i) => (
-                <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-3xl text-center group transition-all hover:-translate-y-2">
-                  <h3 className="font-extrabold uppercase text-[10px] tracking-widest text-emerald-400">{phase}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {nistPhases.map((phase, i) => (
+                <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-[2.5rem] text-center group transition-all hover:-translate-y-2 hover:bg-white/[0.08] relative overflow-hidden">
+                  <div className={`absolute -top-4 -right-4 w-16 h-16 ${phase.bg} blur-2xl opacity-0 group-hover:opacity-40 transition-opacity`}></div>
+                  <div className={`w-14 h-14 mx-auto mb-6 rounded-2xl ${phase.bg} flex items-center justify-center ${phase.color} group-hover:scale-110 transition-transform`}>
+                    <phase.icon size={28} />
+                  </div>
+                  <h3 className={`font-black uppercase text-[10px] tracking-[0.2em] ${phase.color}`}>{phase.phase}</h3>
                 </div>
               ))}
             </div>
@@ -270,7 +451,6 @@ const App: React.FC = () => {
         );
 
       default:
-        // Handle other pages similarly
         return null;
     }
   };

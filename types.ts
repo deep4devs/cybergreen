@@ -42,7 +42,8 @@ export enum Page {
   IdentitySecurity = 'identity-security',
   Networking = 'networking',
   Servers = 'servers',
-  Endpoints = 'endpoints'
+  Endpoints = 'endpoints',
+  Resource = 'resource'
 }
 
 export type Language = 'es' | 'en';

@@ -9,6 +9,15 @@ export interface ThreatIntel {
   recommendedCountermeasure: string;
 }
 
+export interface ResourceNotice {
+  firm: string;
+  title: string;
+  summary: string;
+  impact: 'Low' | 'Medium' | 'High' | 'Critical';
+  date: string;
+  link?: string;
+}
+
 export class QuotaError extends Error {
   constructor(message: string) {
     super(message);
@@ -19,7 +28,6 @@ export class QuotaError extends Error {
 const parseResponse = <T>(text: string | undefined): T => {
   if (!text) throw new Error("Empty response");
   try {
-    // Basic cleanup in case of markdown blocks
     const cleanJson = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanJson) as T;
   } catch (e) {
@@ -40,17 +48,14 @@ const handleApiError = (error: any, lang: Language) => {
 };
 
 export const getSecurityAdvice = async (userInput: string, lang: Language): Promise<SecurityAdvice> => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("Security Engine configuration missing: API_KEY not found.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Use process.env.API_KEY directly as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const isEs = lang === 'es';
   
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      // Using gemini-3-pro-preview for complex infrastructure reasoning
+      model: "gemini-3-pro-preview",
       contents: isEs 
         ? `Analiza la siguiente descripción de infraestructura y proporciona consejos en ESPAÑOL: ${userInput}`
         : `Analyze the following infrastructure description and provide advice in ENGLISH: ${userInput}`,
@@ -66,12 +71,8 @@ export const getSecurityAdvice = async (userInput: string, lang: Language): Prom
           },
           required: ["riskLevel", "summary", "recommendedServices", "immediateSteps"],
         },
-        systemInstruction: isEs 
-          ? "Eres un CISO experto. Responde siempre en ESPAÑOL y formato JSON."
-          : "You are an expert CISO. Always respond in ENGLISH and JSON format.",
       },
     });
-
     return parseResponse<SecurityAdvice>(response.text);
   } catch (e) {
     return handleApiError(e, lang);
@@ -79,20 +80,14 @@ export const getSecurityAdvice = async (userInput: string, lang: Language): Prom
 };
 
 export const generateThreatIntel = async (threatType: string, lang: Language): Promise<ThreatIntel> => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("Intelligence Engine configuration missing: API_KEY not found.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Use process.env.API_KEY directly as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const isEs = lang === 'es';
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: isEs
-        ? `Genera un informe detallado para la amenaza: ${threatType}.`
-        : `Generate a detailed report for the threat: ${threatType}.`,
+      contents: `Generate a detailed report for the threat: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -105,13 +100,58 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
           },
           required: ["title", "technicalDetails", "attackerProfile", "recommendedCountermeasure"],
         },
-        systemInstruction: isEs
-          ? "Analista Senior de Inteligencia. Responde en ESPAÑOL y formato JSON."
-          : "Senior Intelligence Analyst. Respond in ENGLISH and JSON format.",
+      },
+    });
+    return parseResponse<ThreatIntel>(response.text);
+  } catch (e) {
+    return handleApiError(e, lang);
+  }
+};
+
+export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNotice[]> => {
+  // Use process.env.API_KEY directly as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const isEs = lang === 'es';
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Search and summarize the top 4 recent cybersecurity notices/innovations from major Israeli firms like Check Point, Wiz, CyberArk, SentinelOne, and Cato Networks. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
+      config: {
+        tools: [{ googleSearch: {} }],
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              firm: { type: Type.STRING },
+              title: { type: Type.STRING },
+              summary: { type: Type.STRING },
+              impact: { type: Type.STRING, enum: ['Low', 'Medium', 'High', 'Critical'] },
+              date: { type: Type.STRING },
+              link: { type: Type.STRING }, // Field for source link
+            },
+            required: ["firm", "title", "summary", "impact", "date"],
+          },
+        },
       },
     });
 
-    return parseResponse<ThreatIntel>(response.text);
+    const notices = parseResponse<ResourceNotice[]>(response.text);
+
+    // Extract grounding URLs from metadata to fulfill the grounding rule
+    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
+    if (groundingChunks && groundingChunks.length > 0) {
+      notices.forEach((notice, index) => {
+        // Map available search links to the results
+        if (!notice.link && groundingChunks[index]?.web?.uri) {
+          notice.link = groundingChunks[index].web.uri;
+        }
+      });
+    }
+
+    return notices;
   } catch (e) {
     return handleApiError(e, lang);
   }

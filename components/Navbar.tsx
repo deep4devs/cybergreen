@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Page, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { ChevronDown, Shield, Globe, Lock, Cpu, Activity, LayoutGrid, Network, Server, Smartphone } from 'lucide-react';
+import { ChevronDown, Shield, Globe, Lock, Cpu, Activity, LayoutGrid, Network, Server, Smartphone, BookOpen } from 'lucide-react';
 
 interface NavbarProps {
   currentPage: Page;
@@ -59,6 +59,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLang
         { label: t.navAdvisor, id: Page.Advisor, icon: Cpu },
       ]
     },
+    { label: t.navResource, id: Page.Resource },
     { label: t.navMonitor, id: Page.Monitor },
   ];
 

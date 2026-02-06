@@ -1,7 +1,7 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Bot, Terminal, Globe, Mail, Fingerprint, Lock, ShieldAlert, Network, Server, Smartphone, Search, Database, Activity
+  Target, Scale, ClipboardCheck, Cloud, Bot, Terminal, Globe, Mail, Fingerprint, Lock, ShieldAlert, Network, Server, Smartphone, Search, Database, Activity, Layers, ShieldCheck
 } from 'lucide-react';
 
 export const THREAT_WEIGHTS: Record<string, number> = {
@@ -34,6 +34,15 @@ export const getServices = (lang: Language): SecurityService[] => {
       category: 'proactive',
       longDescription: isEs ? 'Nuestros hackers éticos realizan exploraciones profundas de su infraestructura, imitando vectores de ataque del mundo real.' : 'Our ethical hackers perform deep-dive explorations of your infrastructure, mimicking real-world attack vectors.',
       features: isEs ? ['Apps Web', 'Redes', 'Móvil', 'Ingeniería Social'] : ['Web Apps', 'Networks', 'Mobile', 'Social Engineering']
+    },
+    {
+      id: 'cloud-cnapp',
+      title: isEs ? 'CNAPP - Protección Nativa Nube' : 'CNAPP - Cloud Native Protection',
+      description: isEs ? 'Plataforma unificada para seguridad desde el desarrollo hasta la ejecución.' : 'Unified platform for security from development to runtime.',
+      icon: Layers,
+      category: 'cloud',
+      longDescription: isEs ? 'Nuestra solución CNAPP integra CSPM, CWPP y CIEM para proporcionar visibilidad total y control sobre sus entornos multi-nube.' : 'Our CNAPP solution integrates CSPM, CWPP, and CIEM to provide full visibility and control over your multi-cloud environments.',
+      features: isEs ? ['CSPM (Postura)', 'CWPP (Cargas)', 'CIEM (Identidad)', 'KSPM (Kubernetes)'] : ['CSPM (Posture)', 'CWPP (Workloads)', 'CIEM (Identity)', 'KSPM (Kubernetes)']
     },
     {
       id: 'nist-01',
@@ -168,6 +177,7 @@ export const TRANSLATIONS = {
     navNetworking: 'Seguridad Redes',
     navServers: 'Seguridad Servidores',
     navEndpoints: 'Seguridad Endpoints',
+    navResource: 'Recursos',
     login: 'Acceso Clientes',
     footerDesc: 'Protección especializada para activos digitales e infraestructura crítica.',
     legal: 'Legal',
@@ -193,6 +203,8 @@ export const TRANSLATIONS = {
     serversDesc: 'Endurecimiento extremo para entornos de producción y bases de datos.',
     endpointsTitle: 'Protección de Dispositivos',
     endpointsDesc: 'Seguridad total para la fuerza de trabajo remota y dispositivos móviles.',
+    resourceTitle: 'Hub de Inteligencia Israelí',
+    resourceDesc: 'Alertas y noticias de última hora del ecosistema de ciberseguridad líder en el mundo.',
     initDeployment: 'Iniciar Despliegue',
     requestInfo: 'Solicitar Información'
   },
@@ -235,6 +247,7 @@ export const TRANSLATIONS = {
     navNetworking: 'Networking Security',
     navServers: 'Server Security',
     navEndpoints: 'Endpoint Security',
+    navResource: 'Resources',
     login: 'Client Login',
     footerDesc: 'Specialized protection for digital assets and critical infrastructure.',
     legal: 'Legal',
@@ -260,6 +273,8 @@ export const TRANSLATIONS = {
     serversDesc: 'Extreme hardening for production environments and databases.',
     endpointsTitle: 'Device Protection',
     endpointsDesc: 'Total security for remote workforce and mobile devices.',
+    resourceTitle: 'Israeli Intelligence Hub',
+    resourceDesc: 'Latest breakthroughs and security alerts from the world\'s premier cybersecurity ecosystem.',
     initDeployment: 'Initiate Deployment',
     requestInfo: 'Request Information'
   }
