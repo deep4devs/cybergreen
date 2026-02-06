@@ -9,7 +9,7 @@ import { Page, SecurityService, Language } from './types';
 import { getServices, TRANSLATIONS } from './constants';
 import { 
   ShieldCheck, Target, Eye, Gem, Award, Terminal, Network, Layers, Repeat, 
-  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, Plus, X, Server, Smartphone, Activity, Cpu, Users
+  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, Plus, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -36,15 +36,16 @@ const App: React.FC = () => {
   };
 
   const FeatureCard = ({ item, colorClass }: { item: any, colorClass: string }) => (
-    <div className={`bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-${colorClass} transition-all flex flex-col`}>
-      <div className={`w-12 h-12 bg-${colorClass}/10 rounded-2xl flex items-center justify-center text-${colorClass} mb-6 group-hover:scale-110 transition-transform`}>
+    <div className={`bg-white/5 border border-white/10 p-8 rounded-3xl group hover:border-${colorClass} transition-all flex flex-col relative overflow-hidden`}>
+      <div className={`absolute top-0 right-0 w-24 h-24 bg-${colorClass}/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity`}></div>
+      <div className={`w-12 h-12 bg-${colorClass}/10 rounded-2xl flex items-center justify-center text-${colorClass} mb-6 group-hover:scale-110 transition-transform relative z-10`}>
         <item.icon size={24} />
       </div>
-      <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
-      <p className="text-slate-400 text-xs leading-relaxed mb-8 flex-grow">{item.desc}</p>
+      <h3 className="text-lg font-bold text-white mb-3 relative z-10">{item.title}</h3>
+      <p className="text-slate-400 text-xs leading-relaxed mb-8 flex-grow relative z-10 font-medium">{item.desc}</p>
       <button 
         onClick={() => openContact(item.title)}
-        className={`w-full py-3 rounded-xl border border-${colorClass}/20 text-${colorClass} text-[9px] font-black uppercase tracking-widest hover:bg-${colorClass} hover:text-white transition-all`}
+        className={`w-full py-3 rounded-xl border border-${colorClass}/20 text-${colorClass} text-[9px] font-black uppercase tracking-widest hover:bg-${colorClass} hover:text-white transition-all relative z-10`}
       >
         {lang === 'es' ? 'Solicitar Cotización' : 'Request Quote'}
       </button>
@@ -58,22 +59,23 @@ const App: React.FC = () => {
         return (
           <div className="space-y-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Hero Section */}
-            <header className="text-center py-10 px-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-500 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-10">
+            <header className="text-center py-10 px-4 relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-500 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-10 relative z-10">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                 {lang === 'es' ? 'Protección Activa' : 'Active Protection'}
               </div>
-              <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 tracking-tighter leading-[1.1]">
+              <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 tracking-tighter leading-[1.1] relative z-10">
                 {t.heroTitle} <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 drop-shadow-sm">{t.heroFuture}</span>
               </h1>
-              <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed opacity-80 mb-6">
+              <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed opacity-80 mb-6 relative z-10">
                 {t.heroDesc}
               </p>
-              <p className="text-emerald-500/60 font-mono text-xs uppercase tracking-[0.3em] font-bold mb-14 italic">
+              <p className="text-emerald-500/60 font-mono text-xs uppercase tracking-[0.3em] font-bold mb-14 italic relative z-10">
                 &quot;{t.slogan}&quot;
               </p>
-              <div className="flex flex-wrap justify-center gap-5">
+              <div className="flex flex-wrap justify-center gap-5 relative z-10">
                 <button 
                   onClick={() => openContact(lang === 'es' ? 'Escaneo IA Preventivo' : 'Preventive AI Scan')}
                   className="bg-emerald-500 hover:bg-emerald-400 text-white px-10 py-5 rounded-2xl font-extrabold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20 hover:-translate-y-1 active:translate-y-0"
@@ -142,7 +144,7 @@ const App: React.FC = () => {
               </div>
             </section>
 
-            {/* SOC Section */}
+            {/* SOC Preview */}
             <section className="glass p-8 sm:p-12 rounded-[3rem] shadow-3xl">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">
                 <h2 className="text-3xl font-extrabold text-white tracking-tight">{t.socTitle}</h2>
@@ -156,19 +158,73 @@ const App: React.FC = () => {
           </div>
         );
 
-      case Page.Services:
+      case Page.Monitor:
         return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.navServices}</h2>
-              <p className="text-slate-400 font-medium">{t.heroDesc}</p>
+          <div className="animate-in fade-in duration-1000 -mt-10 px-4 max-w-[1600px] mx-auto pb-20">
+             <div className="relative mb-16 group">
+                <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+                <div className="text-center relative z-10">
+                  <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-slate-900 border border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 mb-6 shadow-2xl">
+                    <Radio size={12} className="animate-pulse" />
+                    SOC MISSION CONTROL - LVL 4
+                  </div>
+                  <h2 className="text-7xl font-black text-white mb-6 tracking-tighter uppercase">Cyber<span className="text-emerald-500">Monitor</span></h2>
+                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs max-w-xl mx-auto leading-relaxed italic">
+                    {lang === 'es' 
+                      ? 'Telemetría geoespacial avanzada y análisis neural en tiempo real para activos empresariales.' 
+                      : 'Advanced geospatial telemetry and real-time neural analysis for enterprise assets.'}
+                  </p>
+                </div>
             </div>
-            <ServiceGrid 
-                onSelect={setSelectedService} 
-                onRequestQuote={(service) => openContact(service.title)} 
-                services={allServices} 
-                lang={lang} 
-            />
+
+            <div className="relative">
+              <div className="absolute inset-0 bg-emerald-500/5 rounded-[4rem] blur-3xl"></div>
+              <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden">
+                <div className="scanner-line"></div>
+                
+                {/* Visual Header for Monitor */}
+                <div className="flex flex-wrap items-center justify-between mb-12 gap-6 relative z-10">
+                   <div className="flex items-center gap-8">
+                      <div className="space-y-1">
+                         <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Protocol Status</div>
+                         <div className="text-emerald-500 font-bold text-sm flex items-center gap-2">
+                            <ShieldCheck size={14} /> DEFCON 5 - SECURE
+                         </div>
+                      </div>
+                      <div className="h-10 w-px bg-white/10"></div>
+                      <div className="space-y-1">
+                         <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Node Distribution</div>
+                         <div className="text-white font-bold text-sm">GLOBAL MESH ACTIVATED</div>
+                      </div>
+                   </div>
+                   <div className="flex items-center gap-4">
+                      <div className="text-[10px] font-black text-slate-400 bg-white/5 px-4 py-2 rounded-xl border border-white/5 uppercase tracking-widest">
+                         SECURE CHANNEL: 443/TLS 1.3
+                      </div>
+                   </div>
+                </div>
+                
+                <ThreatMonitor lang={lang} />
+
+                {/* Extended Command Widgets */}
+                <div className="mt-16 pt-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
+                   {[
+                     { label: 'Network Integrity', val: '99.98%', icon: Activity, color: 'text-emerald-500' },
+                     { label: 'Active Guards', val: '24 Agents', icon: Users, color: 'text-blue-500' },
+                     { label: 'Neural Load', val: '14.2%', icon: Cpu, color: 'text-fuchsia-500' },
+                     { label: 'Analysis Speed', val: '12ms', icon: BarChart3, color: 'text-amber-500' },
+                   ].map((s, i) => (
+                     <div key={i} className="bg-slate-900/40 p-6 rounded-3xl border border-white/5 hover:border-white/10 transition-all group">
+                        <div className="flex items-center justify-between mb-4">
+                           <div className="text-slate-600 font-black uppercase tracking-[0.2em] text-[9px]">{s.label}</div>
+                           <s.icon size={14} className={`${s.color} opacity-50 group-hover:opacity-100 transition-opacity`} />
+                        </div>
+                        <div className="text-3xl font-black text-white tracking-tight">{s.val}</div>
+                     </div>
+                   ))}
+                </div>
+              </div>
+            </div>
           </div>
         );
 
@@ -256,6 +312,22 @@ const App: React.FC = () => {
                   lang={lang} 
                />
             </div>
+          </div>
+        );
+
+      case Page.Services:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <div className="text-center max-w-2xl mx-auto">
+              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.navServices}</h2>
+              <p className="text-slate-400 font-medium">{t.heroDesc}</p>
+            </div>
+            <ServiceGrid 
+                onSelect={setSelectedService} 
+                onRequestQuote={(service) => openContact(service.title)} 
+                services={allServices} 
+                lang={lang} 
+            />
           </div>
         );
 
@@ -368,7 +440,7 @@ const App: React.FC = () => {
                <h3 className="text-2xl font-bold text-white mb-8">{isEs ? 'Puente de Migración Empresarial' : 'Enterprise Migration Bridge'}</h3>
                <div className="flex flex-wrap justify-center gap-6 mb-12">
                   {['VMware ESXi', 'Microsoft Hyper-V', 'Citrix Hypervisor', 'Oracle VM'].map(v => (
-                    <div key={v} className="px-6 py-3 bg-slate-900 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{v} → SUSE/KVM</div>
+                    <div key={v} className="px-6 py-3 bg-slate-950 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{v} → SUSE/KVM</div>
                   ))}
                </div>
                <ServiceGrid 
@@ -377,51 +449,6 @@ const App: React.FC = () => {
                   services={allServices.filter(s => s.category === 'linux')} 
                   lang={lang} 
                />
-            </div>
-          </div>
-        );
-
-      case Page.Monitor:
-        return (
-          <div className="animate-in fade-in duration-1000 -mt-10 px-4 max-w-[1600px] mx-auto">
-             <div className="relative mb-12 group">
-                <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
-                <div className="text-center relative z-10">
-                  <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-slate-900 border border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 mb-6 shadow-2xl">
-                    <Activity size={12} className="animate-pulse" />
-                    SOC Live Telemetry
-                  </div>
-                  <h2 className="text-6xl font-black text-white mb-6 tracking-tighter uppercase">Cyber<span className="text-emerald-500">Monitor</span></h2>
-                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs max-w-xl mx-auto leading-relaxed">
-                    {lang === 'es' 
-                      ? 'Visualización geoespacial de amenazas globales y análisis neural de tráfico en tiempo real.' 
-                      : 'Geospatial visualization of global threats and real-time neural traffic analysis.'}
-                  </p>
-                </div>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 bg-emerald-500/5 rounded-[4rem] blur-3xl"></div>
-              <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden">
-                {/* Background Grid Pattern */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#10b981 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-                
-                <ThreatMonitor lang={lang} />
-
-                <div className="mt-16 pt-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
-                   {[
-                     { label: 'Network Integrity', val: '99.98%', icon: ShieldCheck },
-                     { label: 'Active Guards', val: '24', icon: Users },
-                     { label: 'Neural Load', val: '14%', icon: Cpu },
-                     { label: 'System Uptime', val: '342d', icon: Activity },
-                   ].map((s, i) => (
-                     <div key={i} className="text-center">
-                        <div className="text-slate-600 font-black uppercase tracking-[0.2em] text-[9px] mb-2">{s.label}</div>
-                        <div className="text-2xl font-black text-white tracking-tight">{s.val}</div>
-                     </div>
-                   ))}
-                </div>
-              </div>
             </div>
           </div>
         );
@@ -534,8 +561,6 @@ const App: React.FC = () => {
     }
   };
 
-  const usersCount = 24; // Simulated guard count
-
   return (
     <div className="min-h-screen pb-20 selection:bg-emerald-500 selection:text-white">
       <Navbar 
@@ -549,7 +574,7 @@ const App: React.FC = () => {
         {renderContent()}
       </main>
 
-      <footer className="mt-48 border-t border-white/5 py-32 bg-[#020617] px-6">
+      <footer className="mt-48 border-t border-white/5 py-32 bg-[#020617] px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
             <div className="col-span-1 md:col-span-2">

@@ -1,7 +1,7 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu, Globe, Mail, Fingerprint, Lock, ShieldAlert, Key, UserCheck, Search, Network, Server, Smartphone, HardDrive
+  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu, Globe, Mail, Fingerprint, Lock, ShieldAlert, Key, UserCheck, Search, Network, Server, Smartphone
 } from 'lucide-react';
 
 export const getServices = (lang: Language): SecurityService[] => {
@@ -26,58 +26,31 @@ export const getServices = (lang: Language): SecurityService[] => {
       features: ['Identify', 'Protect', 'Detect', 'Respond', 'Recover']
     },
     {
-      id: 'nist-02',
-      title: isEs ? 'Auditoría de Cumplimiento' : 'Compliance Audit',
-      description: isEs ? 'Evaluaciones de brechas y preparación para auditorías gubernamentales.' : 'Gap assessments and readiness for government audits.',
-      icon: ClipboardCheck,
-      category: 'nist',
-      longDescription: isEs ? 'Evaluamos sus controles actuales frente a los requisitos de NIST 800-53 o 800-171.' : 'We evaluate your current controls against NIST 800-53 or 800-171 requirements.',
-      features: isEs ? ['Mapa de Controles', 'Análisis de Brechas', 'Plan de Acción'] : ['Control Mapping', 'Gap Analysis', 'POAM Development']
+      id: 'net-01',
+      title: isEs ? 'Defensa de Redes (NGFW)' : 'Networking Defense (NGFW)',
+      description: isEs ? 'Segmentación de red avanzada y firewalls de próxima generación.' : 'Advanced network segmentation and next-generation firewalls.',
+      icon: Network,
+      category: 'networking',
+      longDescription: isEs ? 'Protegemos su infraestructura de red mediante microsegmentación lógica y firewalls de alto rendimiento con inspección profunda de paquetes.' : 'We protect your network infrastructure via logical microsegmentation and high-performance firewalls with deep packet inspection.',
+      features: isEs ? ['Microsegmentación', 'IPS de Red', 'VPN Site-to-Site', 'Filtrado L7'] : ['Microsegmentation', 'Network IPS', 'Site-to-Site VPN', 'L7 Filtering']
     },
     {
-      id: 'cloud-01',
-      title: isEs ? 'Seguridad AWS & Azure' : 'AWS & Azure Security',
-      description: isEs ? 'Configuración de seguridad nativa y endurecimiento de IAM.' : 'Native security configuration and IAM hardening.',
-      icon: Cloud,
-      category: 'cloud',
-      longDescription: isEs ? 'Protegemos sus cargas de trabajo en la nube mediante configuraciones seguras y monitoreo continuo.' : 'We protect your cloud workloads through secure configurations and continuous monitoring.',
-      features: ['IAM Policy Review', 'VPC Hardening', 'S3 Encryption', 'GuardDuty Ops']
+      id: 'srv-01',
+      title: isEs ? 'Hardening de Servidores' : 'Server Hardening',
+      description: isEs ? 'Endurecimiento extremo para entornos de producción y bases de datos.' : 'Extreme hardening for production environments and databases.',
+      icon: Server,
+      category: 'servers',
+      longDescription: isEs ? 'Blindaje de sistemas operativos para eliminar vectores de ataque innecesarios y asegurar la integridad del kernel y servicios core.' : 'OS hardening to eliminate unnecessary attack vectors and ensure the integrity of the kernel and core services.',
+      features: isEs ? ['Kernel Hardening', 'Auditd Config', 'FIM Monitoring', 'HIDS'] : ['Kernel Hardening', 'Auditd Config', 'FIM Monitoring', 'HIDS']
     },
     {
-      id: 'cloud-02',
-      title: isEs ? 'Seguridad de Kubernetes' : 'Kubernetes Security',
-      description: isEs ? 'Blindaje de contenedores y microservicios en la nube.' : 'Shielding containers and microservices in the cloud.',
-      icon: Package,
-      category: 'cloud',
-      longDescription: isEs ? 'Implementamos seguridad en todo el ciclo de vida del contenedor, desde la imagen hasta la ejecución.' : 'We implement security throughout the container lifecycle, from image to runtime.',
-      features: ['RBAC Config', 'Network Policies', 'Image Scanning', 'Runtime Protection']
-    },
-    {
-      id: 'ai-01',
-      title: isEs ? 'Defensa de LLM' : 'LLM Defense',
-      description: isEs ? 'Protección contra inyección de prompts y fuga de datos.' : 'Protection against prompt injection and data leakage.',
-      icon: Bot,
-      category: 'ai',
-      longDescription: isEs ? 'Aseguramos que sus modelos de lenguaje no sean manipulados ni filtren información confidencial.' : 'We ensure your language models are not manipulated and do not leak confidential information.',
-      features: isEs ? ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection'] : ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing', 'PII Detection']
-    },
-    {
-      id: 'ai-02',
-      title: isEs ? 'Gobernanza de IA' : 'AI Governance',
-      description: isEs ? 'Políticas y ética para el despliegue seguro de IA.' : 'Policies and ethics for secure AI deployment.',
-      icon: Gavel,
-      category: 'ai',
-      longDescription: isEs ? 'Marco de trabajo para el uso responsable y seguro de la inteligencia artificial corporativa.' : 'Framework for the responsible and secure use of corporate artificial intelligence.',
-      features: isEs ? ['Ética de IA', 'Privacidad de Datos', 'Cumplimiento Legal'] : ['AI Ethics', 'Data Privacy', 'Legal Compliance']
-    },
-    {
-       id: 'ir-01',
-       title: isEs ? 'Respuesta a Incidentes' : 'Incident Response',
-       description: isEs ? 'Respuesta rápida 24/7 para contener amenazas activas.' : 'Rapid 24/7 response to contain active threats.',
-       icon: AlertTriangle,
-       category: 'reactive',
-       longDescription: isEs ? 'Nuestro equipo de élite se despliega para neutralizar amenazas y restaurar la integridad del sistema.' : 'Our elite team deploys to neutralize threats and restore system integrity.',
-       features: isEs ? ['Forense Digital', 'Remediación', 'Cacería de Amenazas'] : ['Digital Forensics', 'Remediation', 'Threat Hunting']
+      id: 'end-01',
+      title: isEs ? 'Protección de Endpoints' : 'Endpoint Protection',
+      description: isEs ? 'EDR avanzado para la protección de dispositivos finales y fuerza remota.' : 'Advanced EDR for the protection of end-user devices and remote workforce.',
+      icon: Smartphone,
+      category: 'endpoints',
+      longDescription: isEs ? 'Desplegamos agentes inteligentes de detección y respuesta (EDR/XDR) para neutralizar ransomware y amenazas avanzadas directamente en el dispositivo.' : 'We deploy intelligent detection and response agents (EDR/XDR) to neutralize ransomware and advanced threats directly on the device.',
+      features: isEs ? ['Detección de Ransomware', 'Remote Wipe', 'Análisis de Memoria', 'USB Control'] : ['Ransomware Detection', 'Remote Wipe', 'Memory Analysis', 'USB Control']
     },
     {
       id: 'linux-01',
@@ -85,8 +58,8 @@ export const getServices = (lang: Language): SecurityService[] => {
       description: isEs ? 'Blindaje experto para SUSE Linux Enterprise y virtualización segura.' : 'Expert shielding for SUSE Linux Enterprise and secure virtualization.',
       icon: Terminal,
       category: 'linux',
-      longDescription: isEs ? 'Especialistas en endurecimiento de SUSE Linux Enterprise (SLES), configuración de DNS recursivo seguro y migración de infraestructuras críticas desde entornos comerciales como VMware y Hyper-V.' : 'Specialists in SUSE Linux Enterprise (SLES) hardening, secure recursive DNS configuration, and critical infrastructure migration from commercial environments like VMware and Hyper-V.',
-      features: isEs ? ['Hardening SUSE SLES', 'DNS recursivo DNSSEC', 'Migración VMware/Hyper-V', 'Virtualización KVM/Xen'] : ['SUSE SLES Hardening', 'DNSSEC Recursive DNS', 'VMware/Hyper-V Migration', 'KVM/Xen Virtualization']
+      longDescription: isEs ? 'Especialistas en endurecimiento de SUSE Linux Enterprise (SLES) y migración de infraestructuras críticas desde entornos como VMware.' : 'Specialists in SUSE Linux Enterprise (SLES) hardening and critical infrastructure migration from environments like VMware.',
+      features: isEs ? ['Hardening SUSE SLES', 'DNS recursivo DNSSEC', 'Migración VMware', 'Virtualización KVM'] : ['SUSE SLES Hardening', 'DNSSEC Recursive DNS', 'VMware Migration', 'KVM Virtualization']
     },
     {
       id: 'dns-01',
@@ -94,8 +67,8 @@ export const getServices = (lang: Language): SecurityService[] => {
       description: isEs ? 'Defensa contra secuestro de dominios y envenenamiento de caché.' : 'Defense against domain hijacking and cache poisoning.',
       icon: Globe,
       category: 'dns',
-      longDescription: isEs ? 'Blindamos su infraestructura de resolución de nombres con DNSSEC, firewalls DNS y monitoreo de integridad de zona.' : 'We shield your name resolution infrastructure with DNSSEC, DNS firewalls, and zone integrity monitoring.',
-      features: isEs ? ['DNSSEC Dinámico', 'Mitigación DDoS DNS', 'Filtrado de Dominios', 'Auditoría de Registros'] : ['Dynamic DNSSEC', 'DNS DDoS Mitigation', 'Domain Filtering', 'Record Auditing']
+      longDescription: isEs ? 'Blindamos su infraestructura de resolución de nombres con DNSSEC y firewalls DNS.' : 'We shield your name resolution infrastructure with DNSSEC and DNS firewalls.',
+      features: isEs ? ['DNSSEC Dinámico', 'Mitigación DDoS DNS', 'Filtrado de Dominios'] : ['Dynamic DNSSEC', 'DNS DDoS Mitigation', 'Domain Filtering']
     },
     {
       id: 'email-01',
@@ -103,8 +76,8 @@ export const getServices = (lang: Language): SecurityService[] => {
       description: isEs ? 'Defensa avanzada contra phishing, malware y fuga de datos.' : 'Advanced defense against phishing, malware, and data leakage.',
       icon: Mail,
       category: 'email',
-      longDescription: isEs ? 'Implementación de gateways de correo seguros, políticas DMARC/SPF/DKIM y análisis neural de adjuntos.' : 'Implementation of secure email gateways, DMARC/SPF/DKIM policies, and neural attachment analysis.',
-      features: isEs ? ['Anti-Phishing IA', 'DMARC Enforcement', 'Cifrado de Extremo a Extremo', 'Sandboxing de Adjuntos'] : ['AI Anti-Phishing', 'DMARC Enforcement', 'End-to-End Encryption', 'Attachment Sandboxing']
+      longDescription: isEs ? 'Implementación de gateways de correo seguros y políticas DMARC/SPF/DKIM.' : 'Implementation of secure email gateways and DMARC/SPF/DKIM policies.',
+      features: isEs ? ['Anti-Phishing IA', 'DMARC Enforcement', 'Cifrado de Extremo a Extremo'] : ['AI Anti-Phishing', 'DMARC Enforcement', 'End-to-End Encryption']
     },
     {
       id: 'id-01',
@@ -112,35 +85,26 @@ export const getServices = (lang: Language): SecurityService[] => {
       description: isEs ? 'Arquitectura Zero Trust y control de acceso adaptativo.' : 'Zero Trust architecture and adaptive access control.',
       icon: Fingerprint,
       category: 'identity',
-      longDescription: isEs ? 'Protegemos el perímetro de identidad mediante MFA robusto, Single Sign-On (SSO) y análisis de comportamiento de usuario.' : 'We protect the identity perimeter through robust MFA, Single Sign-On (SSO), and user behavior analytics.',
-      features: isEs ? ['MFA Biométrico', 'SSO Centralizado', 'Privileged Access Mgmt', 'Zero Trust Network Access'] : ['Biometric MFA', 'Centralized SSO', 'Privileged Access Mgmt', 'Zero Trust Network Access']
+      longDescription: isEs ? 'Protegemos el perímetro de identidad mediante MFA robusto y Single Sign-On (SSO).' : 'We protect the identity perimeter through robust MFA and Single Sign-On (SSO).',
+      features: isEs ? ['MFA Biométrico', 'SSO Centralizado', 'Privileged Access Mgmt'] : ['Biometric MFA', 'Centralized SSO', 'Privileged Access Mgmt']
     },
     {
-      id: 'net-01',
-      title: isEs ? 'Defensa de Redes' : 'Networking Defense',
-      description: isEs ? 'Segmentación de red avanzada y firewalls de próxima generación (NGFW).' : 'Advanced network segmentation and next-generation firewalls (NGFW).',
-      icon: Network,
-      category: 'networking',
-      longDescription: isEs ? 'Diseñamos y protegemos topologías de red críticas con microsegmentación y detección de intrusiones en tiempo real.' : 'We design and protect critical network topologies with microsegmentation and real-time intrusion detection.',
-      features: isEs ? ['Microsegmentación', 'IDS/IPS Perimetral', 'VLAN Hardening', 'SD-WAN Segura'] : ['Microsegmentation', 'Perimeter IDS/IPS', 'VLAN Hardening', 'Secure SD-WAN']
+      id: 'cloud-01',
+      title: isEs ? 'Seguridad AWS & Azure' : 'AWS & Azure Security',
+      description: isEs ? 'Configuración de seguridad nativa y endurecimiento de IAM.' : 'Native security configuration and IAM hardening.',
+      icon: Cloud,
+      category: 'cloud',
+      longDescription: isEs ? 'Protegemos sus cargas de trabajo en la nube mediante configuraciones seguras y monitoreo de postura.' : 'We protect your cloud workloads through secure configurations and posture monitoring.',
+      features: ['IAM Policy Review', 'VPC Hardening', 'S3 Encryption']
     },
     {
-      id: 'srv-01',
-      title: isEs ? 'Protección de Servidores' : 'Server Security',
-      description: isEs ? 'Endurecimiento de sistemas operativos y protección de cargas críticas.' : 'OS hardening and protection for critical workloads.',
-      icon: Server,
-      category: 'servers',
-      longDescription: isEs ? 'Blindaje total para entornos de servidor físicos y virtuales, asegurando la integridad de las aplicaciones core.' : 'Total shielding for physical and virtual server environments, ensuring core application integrity.',
-      features: isEs ? ['FIM (Integridad)', 'Patch Management', 'Blindaje de Kernel', 'HIDS'] : ['FIM (Integrity)', 'Patch Management', 'Kernel Shielding', 'HIDS']
-    },
-    {
-      id: 'end-01',
-      title: isEs ? 'Seguridad de Endpoints' : 'Endpoint Protection',
-      description: isEs ? 'EDR/XDR avanzado para la protección de dispositivos finales.' : 'Advanced EDR/XDR for endpoint protection.',
-      icon: Smartphone,
-      category: 'endpoints',
-      longDescription: isEs ? 'Protección total para laptops, móviles y estaciones de trabajo mediante agentes inteligentes de detección y respuesta.' : 'Total protection for laptops, mobiles, and workstations through intelligent detection and response agents.',
-      features: isEs ? ['EDR de Nueva Gen', 'Control de Dispositivos', 'Antivirus Neural', 'Remote Wipe'] : ['Next-Gen EDR', 'Device Control', 'Neural Antivirus', 'Remote Wipe']
+      id: 'ai-01',
+      title: isEs ? 'Defensa de LLM' : 'LLM Defense',
+      description: isEs ? 'Protección contra inyección de prompts y fuga de datos.' : 'Protection against prompt injection and data leakage.',
+      icon: Bot,
+      category: 'ai',
+      longDescription: isEs ? 'Aseguramos que sus modelos de lenguaje no sean manipulados ni filtren información sensible.' : 'We ensure your language models are not manipulated or leak sensitive information.',
+      features: ['Prompt Filtering', 'Data Sanitization', 'Adversarial Testing']
     }
   ];
 };
