@@ -1,4 +1,4 @@
-
+// last version cyberg 1.0
 import type { ElementType } from 'react';
 
 export interface SecurityService {

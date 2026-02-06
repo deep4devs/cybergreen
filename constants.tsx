@@ -1,4 +1,4 @@
-
+// last version cyberg 1.0
 import { SecurityService, Language } from './types';
 import { 
   Target, Scale, ClipboardCheck, Cloud, Bot, Terminal, Globe, Mail, Fingerprint, Lock, Network, Server, Smartphone, Layers
