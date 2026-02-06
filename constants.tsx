@@ -1,8 +1,27 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu, Globe, Mail, Fingerprint, Lock, ShieldAlert, Key, UserCheck, Search, Network, Server, Smartphone
+  Target, Scale, ClipboardCheck, Cloud, Bot, Terminal, Globe, Mail, Fingerprint, Lock, ShieldAlert, Network, Server, Smartphone, Search, Database, Activity
 } from 'lucide-react';
+
+export const THREAT_WEIGHTS: Record<string, number> = {
+  'SQL Injection': 92,
+  'Brute Force': 65,
+  'Unauthorized API Access': 88,
+  'XSS Attack': 45,
+  'DDoS Anomaly': 95,
+  'Malware Pattern': 82,
+  'Email Phishing': 70,
+  'Zero-Day Exploit': 98,
+  'Baseline Network Security': 12
+};
+
+export const getSeverity = (score: number): 'Baseline' | 'Elevated' | 'High' | 'Critical' => {
+  if (score >= 90) return 'Critical';
+  if (score >= 70) return 'High';
+  if (score >= 40) return 'Elevated';
+  return 'Baseline';
+};
 
 export const getServices = (lang: Language): SecurityService[] => {
   const isEs = lang === 'es';

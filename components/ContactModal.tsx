@@ -14,13 +14,28 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
     name: '',
     company: '',
     email: '',
-    message: ''
+    message: '',
+    website: '' // Honeypot field
   });
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Honeypot validation: if the 'website' field is filled, it's likely a bot.
+    if (formData.website) {
+      console.warn('Spam submission detected via honeypot.');
+      // Silently "succeed" to not give bots a hint that they were caught.
+      setStatus('success');
+      setTimeout(() => {
+        setStatus('idle');
+        setFormData({ name: '', company: '', email: '', message: '', website: '' });
+        onClose();
+      }, 2000);
+      return;
+    }
+
     setStatus('sending');
     
     // Simulation of professional email routing
@@ -30,7 +45,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
       setStatus('success');
       setTimeout(() => {
         setStatus('idle');
-        setFormData({ name: '', company: '', email: '', message: '' });
+        setFormData({ name: '', company: '', email: '', message: '', website: '' });
         onClose();
       }, 3500);
     }, 2000);
@@ -99,6 +114,20 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Honeypot field: Hidden from users, but often filled by bots */}
+                <div className="sr-only" aria-hidden="true">
+                  <label htmlFor="website">Leave this field empty</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">

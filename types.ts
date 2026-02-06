@@ -18,6 +18,16 @@ export interface SecurityAdvice {
   immediateSteps: string[];
 }
 
+export interface ThreatAlert {
+  id: string;
+  text: string;
+  type: string;
+  icon: any;
+  score: number;
+  severity: 'Baseline' | 'Elevated' | 'High' | 'Critical';
+  timestamp: string;
+}
+
 export enum Page {
   Home = 'home',
   Services = 'services',

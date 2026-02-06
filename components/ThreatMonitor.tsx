@@ -3,8 +3,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { generateThreatIntel, ThreatIntel } from '../services/geminiService';
-import { Language } from '../types';
-import { Shield, Zap, Target, Cpu, Activity, Info, Users, AlertCircle, Database, Network, Search, HardDrive } from 'lucide-react';
+import { Language, ThreatAlert } from '../types';
+import { THREAT_WEIGHTS, getSeverity } from '../constants';
+import { Shield, Zap, Target, Cpu, Activity, Database, Network, Search, HardDrive, Lock, AlertTriangle } from 'lucide-react';
 
 interface ThreatMonitorProps {
   lang: Language;
@@ -17,12 +18,6 @@ const SIMULATED_INTEL: Record<string, ThreatIntel[]> = {
       technicalDetails: "Pattern matching suggests a lateral movement attempt using compromised service accounts. High-frequency pings detected on internal VLAN 4.",
       attackerProfile: "Nation-state actor / Industrial Espionage Group",
       recommendedCountermeasure: "Isolate VLAN 4 and rotate all service account credentials immediately."
-    },
-    {
-      title: "Distributed Denial of Service (DDoS) Mitigation",
-      technicalDetails: "Inbound traffic spike identified as a SYN flood originating from a botnet of IoT devices. Traffic reaching 40Gbps.",
-      attackerProfile: "Hired Botnet Operator",
-      recommendedCountermeasure: "Activate edge-filtering rules and scrub traffic through global CDN nodes."
     }
   ],
   es: [
@@ -31,12 +26,6 @@ const SIMULATED_INTEL: Record<string, ThreatIntel[]> = {
       technicalDetails: "El análisis de patrones sugiere un intento de movimiento lateral utilizando cuentas de servicio comprometidas. Pings de alta frecuencia detectados en la VLAN interna 4.",
       attackerProfile: "Actor estatal / Grupo de espionaje industrial",
       recommendedCountermeasure: "Aislar la VLAN 4 y rotar todas las credenciales de las cuentas de servicio de inmediato."
-    },
-    {
-      title: "Mitigación de Denegación de Servicio Distribuida (DDoS)",
-      technicalDetails: "Pico de tráfico entrante identificado como un ataque SYN flood originado por una botnet de dispositivos IoT. El tráfico alcanzó los 40 Gbps.",
-      attackerProfile: "Operador de Botnet a sueldo",
-      recommendedCountermeasure: "Activar reglas de filtrado perimetral y limpiar el tráfico a través de nodos CDN globales."
     }
   ]
 };
@@ -56,12 +45,12 @@ const CustomTooltip = ({ active, payload }: any) => {
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Metrics Snapshot</p>
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
-            <p className="text-xs font-bold text-white uppercase tracking-tight">Attacks: <span className="text-red-400">{payload[0].value}</span></p>
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+            <p className="text-xs font-bold text-white">Attacks: {payload[0].value}</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
-            <p className="text-xs font-bold text-white uppercase tracking-tight">Mitigated: <span className="text-emerald-400">{payload[1].value}</span></p>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+            <p className="text-xs font-bold text-white">Mitigated: {payload[1].value}</p>
           </div>
         </div>
       </div>
@@ -72,13 +61,17 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
   const [data, setData] = useState(generateData());
-  const [activeAlerts, setActiveAlerts] = useState<{ id: string; text: string; type: string; icon: any }[]>([]);
+  const [activeAlerts, setActiveAlerts] = useState<ThreatAlert[]>([]);
   const [intelHistory, setIntelHistory] = useState<ThreatIntel[]>([]);
   const isEs = lang === 'es';
 
   const latestAlertType = useMemo(() => activeAlerts[0]?.type || "Baseline Network Security", [activeAlerts]);
+  const currentGlobalScore = useMemo(() => {
+    if (activeAlerts.length === 0) return 12;
+    return Math.round(activeAlerts.reduce((acc, curr) => acc + curr.score, 0) / activeAlerts.length);
+  }, [activeAlerts]);
 
-  const { data: latestIntel, isFetching: loadingIntel, isError } = useQuery<ThreatIntel, Error>({
+  const { data: latestIntel, isFetching: loadingIntel } = useQuery<ThreatIntel, Error>({
     queryKey: ['threatIntel', latestAlertType, lang],
     queryFn: () => generateThreatIntel(latestAlertType, lang),
     retry: 1,
@@ -108,30 +101,47 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
         }];
       });
 
-      if (Math.random() > 0.85) {
+      if (Math.random() > 0.8) {
         const alertConfig = [
           { type: 'SQL Injection', icon: Database },
           { type: 'Brute Force', icon: Lock },
           { type: 'Unauthorized API Access', icon: Network },
           { type: 'XSS Attack', icon: Search },
           { type: 'DDoS Anomaly', icon: Activity },
-          { type: 'Malware Pattern', icon: HardDrive }
+          { type: 'Malware Pattern', icon: HardDrive },
+          { type: 'Zero-Day Exploit', icon: AlertTriangle }
         ];
         
         const selection = alertConfig[Math.floor(Math.random() * alertConfig.length)];
-        const newAlert = {
+        const baseScore = THREAT_WEIGHTS[selection.type] || 50;
+        const variance = Math.floor(Math.random() * 10) - 5;
+        const finalScore = Math.min(100, Math.max(0, baseScore + variance));
+        
+        const newAlert: ThreatAlert = {
           id: Math.random().toString(36).substring(2, 11),
-          text: `${new Date().toLocaleTimeString()} - ${isEs ? 'ALERTA' : 'ALERT'}: ${selection.type}`,
+          text: `${isEs ? 'ALERTA' : 'ALERT'}: ${selection.type}`,
           type: selection.type,
-          icon: selection.icon
+          icon: selection.icon,
+          score: finalScore,
+          severity: getSeverity(finalScore),
+          timestamp: new Date().toLocaleTimeString()
         };
         
         setActiveAlerts(prev => [newAlert, ...prev].slice(0, 5));
       }
-    }, 4000);
+    }, 4500);
 
     return () => clearInterval(interval);
   }, [lang, isEs]);
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'Critical': return 'text-red-500 border-red-500/20 bg-red-500/10';
+      case 'High': return 'text-orange-500 border-orange-500/20 bg-orange-500/10';
+      case 'Elevated': return 'text-amber-500 border-amber-500/20 bg-amber-500/10';
+      default: return 'text-emerald-500 border-emerald-500/20 bg-emerald-500/10';
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -149,7 +159,7 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
                 </div>
                 {isEs ? 'Telemetría de Amenazas' : 'Threat Telemetry'}
               </h3>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1 ml-11">Real-time attack surface monitoring</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1 ml-11">Active Risk Score: <span className={getSeverityColor(getSeverity(currentGlobalScore)).split(' ')[0]}>{currentGlobalScore}</span></p>
             </div>
             
             <div className="flex gap-6">
@@ -159,8 +169,10 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
               </div>
               <div className="w-px h-8 bg-white/5 self-center"></div>
               <div className="flex flex-col items-end">
-                <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Neutralized</span>
-                <span className="text-lg font-black text-emerald-500 mono">{data[data.length-1].mitigated}</span>
+                <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Global Severity</span>
+                <span className={`text-lg font-black uppercase mono ${getSeverityColor(getSeverity(currentGlobalScore)).split(' ')[0]}`}>
+                  {getSeverity(currentGlobalScore)}
+                </span>
               </div>
             </div>
           </div>
@@ -169,10 +181,6 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data}>
                 <defs>
-                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
                   <linearGradient id="colorAttacks" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15}/>
                     <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
@@ -186,26 +194,8 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
                 <XAxis dataKey="time" hide />
                 <YAxis hide domain={[0, 100]} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="attacks" 
-                  stroke="#ef4444" 
-                  strokeWidth={3} 
-                  fillOpacity={1} 
-                  fill="url(#colorAttacks)" 
-                  animationDuration={1500}
-                  filter="url(#glow)"
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="mitigated" 
-                  stroke="#10b981" 
-                  strokeWidth={3} 
-                  fillOpacity={1} 
-                  fill="url(#colorMitigated)" 
-                  animationDuration={2000}
-                  filter="url(#glow)"
-                />
+                <Area type="monotone" dataKey="attacks" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#colorAttacks)" />
+                <Area type="monotone" dataKey="mitigated" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorMitigated)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -222,9 +212,8 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
               </div>
               {isEs ? 'Análisis Neural' : 'Neural Analysis'}
             </h3>
-            <div className={`text-[9px] font-black px-3 py-1.5 rounded-lg border flex items-center gap-2 tracking-widest transition-all ${loadingIntel ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400 animate-pulse' : 'border-white/5 bg-white/5 text-slate-500'}`}>
-              <Zap size={10} fill={loadingIntel ? "currentColor" : "none"} />
-              {loadingIntel ? 'PROCESSING' : 'SYNCED'}
+            <div className={`text-[9px] font-black px-3 py-1.5 rounded-lg border flex items-center gap-2 tracking-widest ${loadingIntel ? 'border-emerald-500/50 text-emerald-400 animate-pulse' : 'text-slate-500 border-white/5'}`}>
+              {loadingIntel ? 'PROCESSING' : 'STABLE'}
             </div>
           </div>
 
@@ -232,31 +221,37 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
             {!displayIntel ? (
                <div className="flex flex-col items-center justify-center py-12 gap-4">
                   <div className="w-12 h-12 border-2 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin"></div>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest italic">Decrypting neural stream...</p>
+                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest italic">Syncing neural stream...</p>
                </div>
             ) : (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="bg-slate-950/50 p-6 rounded-3xl border border-white/5 mb-6 hover:border-emerald-500/20 transition-all cursor-default">
-                  <h4 className="text-emerald-400 font-black uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
-                    <Target size={14} />
-                    {displayIntel.title}
-                  </h4>
+                <div className="bg-slate-950/50 p-6 rounded-3xl border border-white/5 mb-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="text-emerald-400 font-black uppercase text-xs tracking-widest flex items-center gap-2">
+                      <Target size={14} /> {displayIntel.title}
+                    </h4>
+                    <span className={`px-2 py-1 rounded text-[8px] font-black border ${getSeverityColor(activeAlerts[0]?.severity || 'Baseline')}`}>
+                      {activeAlerts[0]?.severity || 'BASELINE'}
+                    </span>
+                  </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Technical Origin</p>
+                      <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Threat Context</p>
                       <p className="text-xs text-slate-300 leading-relaxed font-medium italic">&quot;{displayIntel.attackerProfile}&quot;</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Anomaly Depth</p>
-                      <p className="text-[11px] text-slate-400 leading-relaxed font-medium">{displayIntel.technicalDetails}</p>
+                      <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-1">Analysis Score</p>
+                      <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mt-1">
+                        <div 
+                          className={`h-full transition-all duration-1000 ${getSeverityColor(activeAlerts[0]?.severity || 'Baseline').replace('text', 'bg').split(' ')[0]}`}
+                          style={{ width: `${activeAlerts[0]?.score || 12}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-emerald-500/5 p-6 rounded-3xl border border-emerald-500/20 group/cm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/cm:scale-150 transition-transform duration-700">
-                    <Shield size={40} className="text-emerald-500" />
-                  </div>
                   <h5 className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Shield size={12} /> Defensive Directive
                   </h5>
@@ -269,59 +264,25 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
           </div>
         </div>
 
-        {/* Neural Intel History */}
-        <div className="lg:col-span-12 space-y-6">
-          <div className="flex items-center gap-6">
-             <h4 className="text-[11px] font-black text-slate-600 uppercase tracking-[0.4em] shrink-0">Security Forensics</h4>
-             <div className="h-px w-full bg-white/5"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {intelHistory.length > 0 ? intelHistory.map((intel, idx) => (
-              <div 
-                key={idx} 
-                style={{ animationDelay: `${idx * 200}ms` }}
-                className="bg-slate-900/40 border border-white/5 rounded-3xl p-6 hover:bg-slate-900/60 hover:border-white/10 transition-all animate-in fade-in slide-in-from-bottom-2 duration-500 group"
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 group-hover:bg-emerald-500/10 group-hover:text-emerald-500 transition-all">
-                    <Database size={18} />
-                  </div>
-                  <span className="text-[8px] font-black text-slate-700 uppercase tracking-tighter group-hover:text-slate-500 transition-colors">Forensic Log #{Math.floor(Math.random()*9000)+1000}</span>
-                </div>
-                
-                <h5 className="text-xs font-black text-white uppercase tracking-tight mb-3 line-clamp-1">{intel.title}</h5>
-                <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-3 font-medium mb-6">{intel.technicalDetails}</p>
-                
-                <div className="flex items-center gap-2 pt-4 border-t border-white/5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Isolated</span>
-                </div>
-              </div>
-            )) : (
-              <div className="col-span-3 py-16 text-center border border-dashed border-white/5 rounded-[3rem] bg-white/[0.01]">
-                <p className="text-[10px] font-bold text-slate-700 uppercase tracking-[0.6em] animate-pulse">Establishing secure data tunnel...</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Real-time Event Ticker */}
+        {/* Real-time Event Ticker with Scoring */}
         <div className="lg:col-span-12">
           <div className="bg-slate-950/50 border border-white/5 rounded-[2rem] p-4 relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-1 h-full bg-red-500/30"></div>
+             <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/30"></div>
              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {activeAlerts.map((alert) => (
                   <div 
                     key={alert.id} 
                     className="flex items-center gap-3 p-3 bg-slate-950 border border-white/5 rounded-2xl animate-in slide-in-from-right-4 duration-500"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 shrink-0">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${getSeverityColor(alert.severity)}`}>
                       <alert.icon size={14} />
                     </div>
-                    <div className="overflow-hidden">
-                      <p className="text-[9px] font-black text-red-400/80 uppercase truncate tracking-tight">{alert.text.split(' - ')[1]}</p>
-                      <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest">{alert.text.split(' - ')[0]}</p>
+                    <div className="overflow-hidden flex-1">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <p className="text-[9px] font-black text-white/80 uppercase truncate tracking-tight">{alert.type}</p>
+                        <span className="text-[8px] font-bold opacity-50">{alert.score}</span>
+                      </div>
+                      <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest">{alert.timestamp}</p>
                     </div>
                   </div>
                 ))}

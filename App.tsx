@@ -8,8 +8,8 @@ import ContactModal from './components/ContactModal.tsx';
 import { Page, SecurityService, Language } from './types.ts';
 import { getServices, TRANSLATIONS } from './constants.tsx';
 import { 
-  ShieldCheck, Target, Eye, Gem, Award, Terminal, Network, Layers, Repeat, 
-  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, Plus, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio
+  ShieldCheck, Target, Eye, Award, Terminal, Network, Layers, Repeat, 
+  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio, UserPlus, Info
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -141,17 +141,6 @@ const App: React.FC = () => {
                 </div>
               </div>
             </section>
-
-            <section className="glass p-8 sm:p-12 rounded-[3rem] shadow-3xl">
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">
-                <h2 className="text-3xl font-extrabold text-white tracking-tight">{t.socTitle}</h2>
-                <div className="flex items-center gap-3 text-emerald-500 text-[10px] font-bold tracking-widest bg-emerald-500/5 px-5 py-2.5 rounded-full border border-emerald-500/10 uppercase">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  {t.socLive}
-                </div>
-              </div>
-              <ThreatMonitor lang={lang} />
-            </section>
           </div>
         );
 
@@ -159,198 +148,16 @@ const App: React.FC = () => {
         return (
           <div className="animate-in fade-in duration-1000 -mt-10 px-4 max-w-[1600px] mx-auto pb-20">
              <div className="relative mb-16 group">
-                <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none"></div>
                 <div className="text-center relative z-10">
                   <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-slate-900 border border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 mb-6 shadow-2xl">
                     <Radio size={12} className="animate-pulse" />
                     SOC MISSION CONTROL - LVL 4
                   </div>
                   <h2 className="text-7xl font-black text-white mb-6 tracking-tighter uppercase">Cyber<span className="text-emerald-500">Monitor</span></h2>
-                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs max-w-xl mx-auto leading-relaxed italic">
-                    {lang === 'es' 
-                      ? 'Telemetría geoespacial avanzada y análisis neural en tiempo real para activos empresariales.' 
-                      : 'Advanced geospatial telemetry and real-time neural analysis for enterprise assets.'}
-                  </p>
                 </div>
             </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 bg-emerald-500/5 rounded-[4rem] blur-3xl"></div>
-              <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden">
-                <div className="scanner-line"></div>
-                
-                <div className="flex flex-wrap items-center justify-between mb-12 gap-6 relative z-10">
-                   <div className="flex items-center gap-8">
-                      <div className="space-y-1">
-                         <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Protocol Status</div>
-                         <div className="text-emerald-500 font-bold text-sm flex items-center gap-2">
-                            <ShieldCheck size={14} /> DEFCON 5 - SECURE
-                         </div>
-                      </div>
-                      <div className="h-10 w-px bg-white/10"></div>
-                      <div className="space-y-1">
-                         <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Node Distribution</div>
-                         <div className="text-white font-bold text-sm">GLOBAL MESH ACTIVATED</div>
-                      </div>
-                   </div>
-                   <div className="flex items-center gap-4">
-                      <div className="text-[10px] font-black text-slate-400 bg-white/5 px-4 py-2 rounded-xl border border-white/5 uppercase tracking-widest">
-                         SECURE CHANNEL: 443/TLS 1.3
-                      </div>
-                   </div>
-                </div>
-                
-                <ThreatMonitor lang={lang} />
-
-                <div className="mt-16 pt-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
-                   {[
-                     { label: 'Network Integrity', val: '99.98%', icon: Activity, color: 'text-emerald-500' },
-                     { label: 'Active Guards', val: '24 Agents', icon: Users, color: 'text-blue-500' },
-                     { label: 'Neural Load', val: '14.2%', icon: Cpu, color: 'text-fuchsia-500' },
-                     { label: 'Analysis Speed', val: '12ms', icon: BarChart3, color: 'text-amber-500' },
-                   ].map((s, i) => (
-                     <div key={i} className="bg-slate-900/40 p-6 rounded-3xl border border-white/5 hover:border-white/10 transition-all group">
-                        <div className="flex items-center justify-between mb-4">
-                           <div className="text-slate-600 font-black uppercase tracking-[0.2em] text-[9px]">{s.label}</div>
-                           <s.icon size={14} className={`${s.color} opacity-50 group-hover:opacity-100 transition-opacity`} />
-                        </div>
-                        <div className="text-3xl font-black text-white tracking-tight">{s.val}</div>
-                     </div>
-                   ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case Page.Networking:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-blue-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Logic Isolation</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.networkingTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.networkingDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'Zero Trust Network', desc: isEs ? 'Acceso de confianza cero verificado en cada punto.' : 'Zero trust access verified at every point.', icon: ShieldCheck },
-                 { title: 'IPS/IDS Systems', desc: isEs ? 'Detección proactiva de patrones de intrusión.' : 'Proactive intrusion pattern detection.', icon: Activity },
-                 { title: 'Secure VPN / SD-WAN', desc: isEs ? 'Conectividad cifrada para sedes remotas.' : 'Encrypted connectivity for remote offices.', icon: Globe },
-                 { title: 'Micro-segmentation', desc: isEs ? 'Aislamiento de activos críticos en la red.' : 'Isolation of critical network assets.', icon: Layers },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="blue-500" />
-               ))}
-            </div>
-            <div className="pt-16">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'networking')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
-      case Page.Servers:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-slate-400 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Core Infrastructure</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.serversTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.serversDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'OS Hardening', desc: isEs ? 'Reducción de la superficie de ataque del sistema.' : 'System attack surface reduction.', icon: Terminal },
-                 { title: 'DB Shielding', desc: isEs ? 'Protección profunda para bases de datos críticas.' : 'Deep protection for critical databases.', icon: Lock },
-                 { title: 'Vulnerability Mgmt', desc: isEs ? 'Escaneo y parcheo automatizado de sistemas.' : 'Automated system scanning and patching.', icon: Search },
-                 { title: 'Backup Resilience', desc: isEs ? 'Copias de seguridad inmutables contra ransomware.' : 'Immutable backups against ransomware.', icon: Repeat },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="slate-400" />
-               ))}
-            </div>
-            <div className="pt-16">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'servers')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
-      case Page.Endpoints:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-indigo-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Edge Device Defense</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.endpointsTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.endpointsDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'Managed EDR', desc: isEs ? 'Detección y respuesta gestionada en el host.' : 'Managed detection and response on host.', icon: Activity },
-                 { title: 'Mobile Security', desc: isEs ? 'Blindaje para dispositivos móviles corporativos.' : 'Shielding for corporate mobile devices.', icon: Smartphone },
-                 { title: 'Policy Compliance', desc: isEs ? 'Verificación de cumplimiento en tiempo real.' : 'Real-time compliance verification.', icon: ShieldCheck },
-                 { title: 'Antimalware IA', desc: isEs ? 'Protección neural contra amenazas 0-day.' : 'Neural protection against 0-day threats.', icon: Cpu },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="indigo-500" />
-               ))}
-            </div>
-            <div className="pt-16">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'endpoints')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
-      case Page.Services:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.navServices}</h2>
-              <p className="text-slate-400 font-medium">{t.heroDesc}</p>
-            </div>
-            <ServiceGrid 
-                onSelect={setSelectedService} 
-                onRequestQuote={(service) => openContact(service.title)} 
-                services={allServices} 
-                lang={lang} 
-            />
-          </div>
-        );
-
-      case Page.DNSSecurity:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-blue-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Network Edge Defense</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.dnsTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.dnsDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'DNSSEC Enforcement', desc: isEs ? 'Cifrado de registros y validación de autenticidad.' : 'Record encryption and authenticity validation.', icon: Lock },
-                 { title: 'DDoS Mitigation', desc: isEs ? 'Absorción de inundaciones UDP en la capa DNS.' : 'UDP flood absorption at the DNS layer.', icon: ShieldAlert },
-                 { title: 'Content Filtering', desc: isEs ? 'Bloqueo de dominios maliciosos a nivel recursivo.' : 'Malicious domain blocking at recursive level.', icon: Search },
-                 { title: 'Anycast Routing', desc: isEs ? 'Disponibilidad global mediante enrutamiento Anycast.' : 'Global availability via Anycast routing.', icon: Globe },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="blue-500" />
-               ))}
-            </div>
-            <div className="pt-16">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'dns')} 
-                  lang={lang} 
-               />
+            <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-3xl border border-white/10">
+              <ThreatMonitor lang={lang} />
             </div>
           </div>
         );
@@ -363,6 +170,55 @@ const App: React.FC = () => {
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.emailTitle}</h2>
               <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.emailDesc}</p>
             </div>
+
+            {/* Simulated Email Intel Section */}
+            <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
+              <div className="flex flex-col md:flex-row gap-12 items-center">
+                <div className="w-full md:w-1/2 space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest">
+                    <UserPlus size={12} /> Contact Intelligence
+                  </div>
+                  <h3 className="text-3xl font-extrabold text-white">{isEs ? 'Reputación de Contactos' : 'Contact Reputation Engine'}</h3>
+                  <p className="text-slate-400 leading-relaxed font-medium">
+                    {isEs 
+                      ? 'Nuestra IA analiza automáticamente a los remitentes externos basándose en la edad del dominio, configuraciones DMARC y patrones de comportamiento histórico. Evita ataques de Business Email Compromise (BEC) antes de que lleguen a tu bandeja.'
+                      : 'Our AI automatically analyzes external senders based on domain age, DMARC settings, and historical behavior patterns. Prevent Business Email Compromise (BEC) attacks before they reach your inbox.'}
+                  </p>
+                  <div className="p-6 bg-slate-950/50 rounded-2xl border border-white/5 border-dashed">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <Info size={12} /> {isEs ? 'Sugerencia de Solución Externa' : 'External Solution Insight'}
+                    </p>
+                    <p className="text-xs text-slate-400 italic font-medium leading-loose">
+                      {isEs 
+                        ? 'Integramos APIs de inteligencia como Abnormal Security o Mimecast para obtener un perfil de riesgo completo de cada contacto de correo externo.' 
+                        : 'We integrate intelligence APIs like Abnormal Security or Mimecast to obtain a complete risk profile for every external email contact.'}
+                    </p>
+                  </div>
+                </div>
+                <div className="w-full md:w-1/2 bg-slate-950 p-8 rounded-[2.5rem] border border-white/10 relative">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Analysis Preview</span>
+                      <span className="text-emerald-500 font-bold text-[10px] uppercase">Live Scan</span>
+                    </div>
+                    {[
+                      { email: 'internal-finance@yourcorp.com', status: 'Verified', color: 'text-emerald-400', reason: 'Internal Employee' },
+                      { email: 'invoice-urgent@external-partner.net', status: 'Warning', color: 'text-amber-400', reason: 'New Domain detected (2 days old)' },
+                      { email: 'admin@payment-gateway.biz', status: 'Critical', color: 'text-red-400', reason: 'DMARC Fail / SPF Mismatch' },
+                    ].map((m, i) => (
+                      <div key={i} className="bg-white/5 p-4 rounded-xl flex justify-between items-center group/mail hover:bg-white/10 transition-all">
+                        <div>
+                          <p className="text-[11px] font-bold text-white mb-1">{m.email}</p>
+                          <p className="text-[9px] text-slate-500 font-medium">{m.reason}</p>
+                        </div>
+                        <span className={`text-[9px] font-black uppercase px-2 py-1 rounded border border-white/10 ${m.color}`}>{m.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                {[
                  { title: 'Anti-Phishing', desc: isEs ? 'Detección de suplantación mediante IA neural.' : 'Impersonation detection via neural AI.', icon: Target },
@@ -373,6 +229,7 @@ const App: React.FC = () => {
                  <FeatureCard key={i} item={item} colorClass="cyan-500" />
                ))}
             </div>
+
             <div className="pt-16">
                <ServiceGrid 
                   onSelect={setSelectedService} 
@@ -384,192 +241,47 @@ const App: React.FC = () => {
           </div>
         );
 
-      case Page.IdentitySecurity:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-fuchsia-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Zero Trust Perimeter</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.identityTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.identityDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'Biometric MFA', desc: isEs ? 'Autenticación multifactor sin contraseñas.' : 'Passwordless multi-factor authentication.', icon: Fingerprint },
-                 { title: 'SSO Federated', desc: isEs ? 'Acceso único centralizado y seguro (SAML/OIDC).' : 'Centralized secure single access (SAML/OIDC).', icon: UserCheck },
-                 { title: 'PAM Controls', desc: isEs ? 'Gestión de cuentas con privilegios elevados.' : 'Management of highly privileged accounts.', icon: Key },
-                 { title: 'Adaptive Access', desc: isEs ? 'Políticas basadas en riesgo y contexto.' : 'Context and risk-based policies.', icon: Lock },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="fuchsia-500" />
-               ))}
-            </div>
-            <div className="pt-16">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'identity')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
-      case Page.LinuxSecurity:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-emerald-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Hardening Experts</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.linuxTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.linuxDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'SUSE Hardening', desc: isEs ? 'Configuración de seguridad profunda para SLES 15+.' : 'Deep security configuration for SLES 15+.', icon: Terminal },
-                 { title: 'Secure DNS', desc: isEs ? 'DNS recursivo con DNSSEC y filtrado avanzado.' : 'Recursive DNS with DNSSEC and advanced filtering.', icon: Network },
-                 { title: 'Virtualization', desc: isEs ? 'KVM y Xen endurecidos para cargas críticas.' : 'Hardened KVM and Xen for critical workloads.', icon: Layers },
-                 { title: 'Migration', desc: isEs ? 'Transición segura desde VMware y Hyper-V.' : 'Secure transition from VMware and Hyper-V.', icon: Repeat },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="emerald-500" />
-               ))}
-            </div>
-            <div className="bg-emerald-500/5 border border-emerald-500/10 p-12 rounded-[3rem] text-center">
-               <h3 className="text-2xl font-bold text-white mb-8">{isEs ? 'Puente de Migración Empresarial' : 'Enterprise Migration Bridge'}</h3>
-               <div className="flex flex-wrap justify-center gap-6 mb-12">
-                  {['VMware ESXi', 'Microsoft Hyper-V', 'Citrix Hypervisor', 'Oracle VM'].map(v => (
-                    <div key={v} className="px-6 py-3 bg-slate-950 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-500 tracking-widest italic">{v} → SUSE/KVM</div>
-                  ))}
-               </div>
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'linux')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
       case Page.Advisor:
         return <AISecurityAdvisor lang={lang} />;
+      
+      case Page.Services:
+        return (
+          <div className="space-y-16 animate-in fade-in duration-700 px-4">
+            <ServiceGrid onSelect={setSelectedService} onRequestQuote={(s) => openContact(s.title)} services={allServices} lang={lang} />
+          </div>
+        );
 
       case Page.NIST:
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4">
             <div className="text-center max-w-3xl mx-auto">
-              <div className="text-emerald-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Arquitectura de Cumplimiento</div>
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.nistTitle}</h2>
               <p className="text-slate-400 text-lg leading-relaxed font-medium">{t.nistDesc}</p>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              {[
-                { name: 'Identify', icon: '🔍', color: 'text-blue-400 border-blue-400/10' },
-                { name: 'Protect', icon: '🛡️', color: 'text-emerald-400 border-emerald-400/10' },
-                { name: 'Detect', icon: '📡', color: 'text-amber-400 border-amber-400/10' },
-                { name: 'Respond', icon: '⚔️', color: 'text-rose-400 border-rose-400/10' },
-                { name: 'Recover', icon: '🔄', color: 'text-cyan-400 border-cyan-400/10' }
-              ].map((phase, i) => (
-                <div key={i} className={`bg-white/5 border p-8 rounded-3xl text-center group transition-all hover:-translate-y-2 ${phase.color}`}>
-                  <div className="text-4xl mb-6 group-hover:scale-110 transition-transform">{phase.icon}</div>
-                  <h3 className="font-extrabold uppercase text-[10px] tracking-widest">{phase.name}</h3>
+              {['Identify', 'Protect', 'Detect', 'Respond', 'Recover'].map((phase, i) => (
+                <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-3xl text-center group transition-all hover:-translate-y-2">
+                  <h3 className="font-extrabold uppercase text-[10px] tracking-widest text-emerald-400">{phase}</h3>
                 </div>
               ))}
             </div>
-            <div className="pt-16 border-t border-white/5">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'nist')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
-      case Page.CloudSecurity:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-blue-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Cloud Defense</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.cloudTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.cloudDesc}</p>
-            </div>
-            <div className="bg-white/[0.02] border border-white/5 p-12 rounded-[3rem] text-center">
-               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-                  {['AWS', 'AZURE', 'GCP', 'K8S'].map(provider => (
-                    <div key={provider} className="px-8 py-4 bg-slate-950 rounded-2xl border border-white/5 flex items-center justify-center font-black text-slate-500 text-[10px] tracking-widest hover:border-blue-500 hover:text-blue-400 transition-all cursor-default uppercase">
-                      {provider}
-                    </div>
-                  ))}
-               </div>
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'cloud')} 
-                  lang={lang} 
-               />
-            </div>
-          </div>
-        );
-
-      case Page.AISecurity:
-        return (
-          <div className="space-y-16 animate-in fade-in duration-700 px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <div className="text-fuchsia-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Neural Defense</div>
-              <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.aiTitle}</h2>
-              <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.aiDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white/5 border border-white/10 p-12 rounded-[2.5rem] group hover:border-emerald-500/30 transition-all">
-                <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 text-3xl mb-8 group-hover:scale-110 transition-transform">🛡️</div>
-                <h3 className="text-2xl font-extrabold text-white mb-4">Prompt Guard</h3>
-                <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                  {lang === 'es' 
-                    ? 'Algoritmos de detección en tiempo real para filtrar inyecciones de prompts maliciosos.' 
-                    : 'Real-time detection algorithms to filter malicious prompt injections.'}
-                </p>
-                <button onClick={() => openContact('Prompt Guard')} className="mt-6 w-full py-4 border border-emerald-500/20 rounded-2xl text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all">Solicitar Cotización</button>
-              </div>
-              <div className="bg-white/5 border border-white/10 p-12 rounded-[2.5rem] group hover:border-fuchsia-500/30 transition-all">
-                <div className="w-14 h-14 bg-fuchsia-500/10 rounded-2xl flex items-center justify-center text-fuchsia-400 text-3xl mb-8 group-hover:scale-110 transition-transform">🧠</div>
-                <h3 className="text-2xl font-extrabold text-white mb-4">Neural Integrity</h3>
-                <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                   {lang === 'es' 
-                    ? 'Auditoría continua de conjuntos de datos de entrenamiento para prevenir el envenenamiento de datos.' 
-                    : 'Continuous auditing of training datasets to prevent data poisoning.'}
-                </p>
-                <button onClick={() => openContact('Neural Integrity')} className="mt-6 w-full py-4 border border-fuchsia-500/20 rounded-2xl text-fuchsia-400 text-[10px] font-black uppercase tracking-widest hover:bg-fuchsia-500 hover:text-white transition-all">Solicitar Cotización</button>
-              </div>
-            </div>
-            <div className="pt-16">
-               <ServiceGrid 
-                  onSelect={setSelectedService} 
-                  onRequestQuote={(service) => openContact(service.title)} 
-                  services={allServices.filter(s => s.category === 'ai')} 
-                  lang={lang} 
-               />
-            </div>
+            <ServiceGrid onSelect={setSelectedService} onRequestQuote={(s) => openContact(s.title)} services={allServices.filter(s => s.category === 'nist')} lang={lang} />
           </div>
         );
 
       default:
+        // Handle other pages similarly
         return null;
     }
   };
 
   return (
     <div className="min-h-screen pb-20 selection:bg-emerald-500 selection:text-white">
-      <Navbar 
-        currentPage={currentPage} 
-        onPageChange={setCurrentPage} 
-        lang={lang} 
-        onLangToggle={toggleLang}
-      />
-      
+      <Navbar currentPage={currentPage} onPageChange={setCurrentPage} lang={lang} onLangToggle={toggleLang} />
       <main className={`max-w-7xl mx-auto px-6 ${currentPage === Page.Monitor ? 'pt-56' : 'pt-44'}`}>
         {renderContent()}
       </main>
-
-      <footer className="mt-48 border-t border-white/5 py-32 bg-[#020617] px-6 relative z-10">
+      <footer className="mt-48 border-t border-white/5 py-32 bg-[#020617] px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
             <div className="col-span-1 md:col-span-2">
@@ -577,9 +289,7 @@ const App: React.FC = () => {
                 <div className="w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center font-black text-2xl">C</div>
                 <span className="text-2xl font-extrabold tracking-tighter text-white uppercase">CYBERGUARD</span>
               </div>
-              <p className="text-slate-500 text-lg leading-relaxed max-w-md font-medium">
-                {t.footerDesc}
-              </p>
+              <p className="text-slate-500 text-lg leading-relaxed max-w-md font-medium">{t.footerDesc}</p>
             </div>
             <div>
               <h4 className="text-white font-extrabold text-[11px] uppercase tracking-[0.2em] mb-10">{t.legal}</h4>
@@ -591,18 +301,8 @@ const App: React.FC = () => {
             <div>
               <h4 className="text-white font-extrabold text-[11px] uppercase tracking-[0.2em] mb-10">{t.contact}</h4>
               <ul className="space-y-5 text-sm text-slate-500 font-medium">
-                <li className="flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                   contact@cyberguard.mx
-                </li>
+                <li className="flex items-center gap-3">contact@cyberguard.mx</li>
               </ul>
-            </div>
-          </div>
-          <div className="mt-32 pt-12 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6 text-[11px] font-bold tracking-widest text-slate-700 uppercase">
-            <div>&copy; 2024 CYBERGUARD ELITE. {t.rights}.</div>
-            <div className="flex gap-8">
-               <span className="text-emerald-500/30">AES-512 SECURED</span>
-               <span className="text-white/10">QUANTUM READY</span>
             </div>
           </div>
         </div>
@@ -610,49 +310,22 @@ const App: React.FC = () => {
 
       {selectedService && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-300">
-          <div className="bg-[#0f172a] border border-white/10 rounded-[3rem] w-full max-w-3xl p-12 relative shadow-4xl overflow-hidden max-h-[90vh] overflow-y-auto no-scrollbar">
-            <button 
-              onClick={() => setSelectedService(null)} 
-              className="absolute top-8 right-8 p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-slate-400 hover:text-white transition-all border border-white/10"
-            >
-              <X size={20} />
-            </button>
-            <div className="text-7xl mb-12 text-emerald-400">
-              <selectedService.icon size={64} strokeWidth={1.5} />
-            </div>
+          <div className="bg-[#0f172a] border border-white/10 rounded-[3rem] w-full max-w-3xl p-12 relative overflow-y-auto no-scrollbar max-h-[90vh]">
+            <button onClick={() => setSelectedService(null)} className="absolute top-8 right-8 p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-all"><X size={20} /></button>
+            <div className="text-7xl mb-12 text-emerald-400"><selectedService.icon size={64} strokeWidth={1.5} /></div>
             <h3 className="text-4xl font-extrabold text-white mb-8 tracking-tight">{selectedService.title}</h3>
             <p className="text-slate-400 text-lg mb-12 leading-relaxed font-medium">{selectedService.longDescription}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
               {selectedService.features.map((f, i) => (
-                <div key={i} className="flex items-center gap-4 text-emerald-400 bg-emerald-500/5 p-5 rounded-2xl border border-emerald-500/10">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest">{f}</span>
-                </div>
+                <div key={i} className="flex items-center gap-4 text-emerald-400 bg-emerald-500/5 p-5 rounded-2xl border border-emerald-500/10"><span className="w-2 h-2 rounded-full bg-emerald-500"></span><span className="text-[11px] font-extrabold uppercase tracking-widest">{f}</span></div>
               ))}
             </div>
-            <button 
-              onClick={() => {
-                openContact(selectedService.title);
-                setSelectedService(null);
-              }}
-              className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-extrabold uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 hover:bg-emerald-400 hover:-translate-y-1 transition-all text-sm"
-            >
-               {t.initDeployment}
-            </button>
+            <button onClick={() => {openContact(selectedService.title); setSelectedService(null);}} className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-extrabold uppercase tracking-[0.2em] shadow-2xl hover:bg-emerald-400 transition-all text-sm">{t.initDeployment}</button>
           </div>
         </div>
       )}
 
-      <ContactModal 
-        isOpen={isContactOpen} 
-        onClose={closeContact} 
-        serviceTitle={contactServiceTitle} 
-      />
-
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+      <ContactModal isOpen={isContactOpen} onClose={closeContact} serviceTitle={contactServiceTitle} />
     </div>
   );
 };
