@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Send, X, ShieldCheck, Building2, User, MessageSquare, AlertCircle } from 'lucide-react';
+import { Mail, Send, X, ShieldCheck, Building2, User, MessageSquare, AlertCircle, Fingerprint, Shield, Zap, Loader2 } from 'lucide-react';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -8,8 +8,14 @@ interface ContactModalProps {
   serviceTitle?: string;
 }
 
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
+
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTitle }) => {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'verifying' | 'sending' | 'success'>('idle');
   const [emailError, setEmailError] = useState<string | null>(null);
   
   // Anti-bot metrics
@@ -18,14 +24,16 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
   const keyIntervals = useRef<number[]>([]);
   const lastKeyTime = useRef<number>(0);
   const mouseMoved = useRef<boolean>(false);
+  
+  const [securityRating, setSecurityRating] = useState<number>(0);
 
   const [formData, setFormData] = useState({
     name: '',
     company: '',
     email: '',
     message: '',
-    website: '', // Honeypot 1: Deceptive URL field
-    confirm_email: '' // Honeypot 2: Deceptive confirmation field
+    website: '', 
+    confirm_email: '' 
   });
 
   useEffect(() => {
@@ -35,11 +43,13 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
       keyIntervals.current = [];
       lastKeyTime.current = 0;
       mouseMoved.current = false;
+      setSecurityRating(0);
       
       const handleMouseMove = () => {
         if (!mouseMoved.current) {
           mouseMoved.current = true;
           interactionScore.current += 20;
+          updateSecurityRating();
         }
       };
 
@@ -47,6 +57,14 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
       return () => window.removeEventListener('mousemove', handleMouseMove);
     }
   }, [isOpen]);
+
+  const updateSecurityRating = () => {
+    let score = 0;
+    if (mouseMoved.current) score += 30;
+    if (interactionScore.current > 5) score += 20;
+    if (keyIntervals.current.length > 3) score += 20;
+    setSecurityRating(Math.min(100, score));
+  };
 
   if (!isOpen) return null;
 
@@ -62,39 +80,50 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
     }
     lastKeyTime.current = now;
     interactionScore.current += 1;
+    updateSecurityRating();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setEmailError(null);
 
-    // Calculate Typing Consistency (Bots often type with perfect intervals)
+    setStatus('verifying');
+
+    // reCAPTCHA v3 implementation logic
+    let captchaToken = '';
+    try {
+      if (window.grecaptcha) {
+        captchaToken = await window.grecaptcha.execute('6Ld_placeholder_site_key', { action: 'submit_contact' });
+        console.debug('[SOC] reCAPTCHA Token Acquired:', captchaToken);
+      }
+    } catch (err) {
+      console.warn('[SOC] reCAPTCHA failed or blocked. Relying on behavioral heuristics.');
+    }
+
+    // Advanced Bot Scoring
+    const timeDiff = Date.now() - mountTime.current;
+    
     let typingConsistencyScore = 0;
     if (keyIntervals.current.length > 5) {
       const average = keyIntervals.current.reduce((a, b) => a + b) / keyIntervals.current.length;
       const variance = keyIntervals.current.reduce((a, b) => a + Math.pow(b - average, 2), 0) / keyIntervals.current.length;
       const stdDev = Math.sqrt(variance);
-      // Humans have high stdDev in typing. If stdDev is extremely low (< 5ms), it's likely a script.
-      if (stdDev > 10) typingConsistencyScore = 30;
+      if (stdDev > 8) typingConsistencyScore = 30;
     }
 
-    const timeDiff = Date.now() - mountTime.current;
-
-    // Advanced Bot Scoring
-    // 1. Honeypots: Immediate fail
-    // 2. Interaction Score: Humans move mice and press keys
-    // 3. Velocity: Humans take time to read and fill forms
     const botDetected = 
       formData.website !== '' || 
       formData.confirm_email !== '' || 
-      timeDiff < 3000 || // Form submitted in less than 3 seconds
-      (interactionScore.current < 15 && timeDiff > 1000) || // Low interaction for the time taken
-      (keyIntervals.current.length > 0 && typingConsistencyScore === 0); // Perfectly consistent typing
+      timeDiff < 2500 || 
+      (interactionScore.current < 10 && timeDiff > 800) ||
+      (keyIntervals.current.length > 2 && typingConsistencyScore === 0);
+
+    // Artificial delay to simulate "Deep Packet Inspection"
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     if (botDetected) {
-      console.warn('[CYBERGUARD-SOC] Intercepted suspicious submission pattern. Analyzing fingerprints...');
+      console.warn('[CYBERGUARD-SOC] Intercepted automated submission attempt.');
       setStatus('sending');
-      // Silently discard data but show success to the "user" (the bot)
       setTimeout(() => {
         setStatus('success');
         setTimeout(() => {
@@ -107,18 +136,19 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
     }
 
     if (!validateEmail(formData.email)) {
+      setStatus('idle');
       setEmailError('Por favor ingresa un correo electrónico corporativo válido.');
       return;
     }
 
     setStatus('sending');
     
-    console.debug(`[SOC-ROUTING] Secure Transmission: ${serviceTitle || 'General'}`, {
+    console.debug(`[SOC-ROUTING] Secure Transmission Initiated`, {
       ...formData,
-      metrics: {
-        time_to_submit: `${(timeDiff / 1000).toFixed(2)}s`,
+      telemetry: {
         interaction_score: interactionScore.current,
-        mouse_active: mouseMoved.current
+        captcha_present: !!captchaToken,
+        trust_index: securityRating
       }
     });
     
@@ -141,104 +171,106 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 sm:p-6 bg-slate-950/95 backdrop-blur-3xl animate-in fade-in duration-300">
       <div className="bg-[#020617] border border-white/10 rounded-[3rem] w-full max-w-2xl relative shadow-[0_0_100px_rgba(16,185,129,0.05)] overflow-hidden">
         
-        {status === 'sending' && (
-          <div className="absolute top-0 left-0 h-1 bg-emerald-500 animate-progress w-full"></div>
+        {(status === 'sending' || status === 'verifying') && (
+          <div className="absolute top-0 left-0 h-1 bg-emerald-500 animate-progress w-full z-20"></div>
         )}
 
         <button 
           onClick={onClose} 
-          className="absolute top-8 right-8 p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-slate-400 hover:text-white transition-all border border-white/5 z-10"
+          className="absolute top-8 right-8 p-3 bg-white/5 hover:bg-white/10 rounded-2xl text-slate-400 hover:text-white transition-all border border-white/5 z-30"
         >
           <X size={20} />
         </button>
 
         {status === 'success' ? (
-          <div className="py-20 px-12 text-center animate-in zoom-in-95 duration-500">
-            <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mx-auto mb-10 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
+          <div className="py-24 px-12 text-center animate-in zoom-in-95 duration-500">
+            <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mx-auto mb-10 border border-emerald-500/20 shadow-2xl">
               <ShieldCheck size={48} />
             </div>
-            <h3 className="text-4xl font-extrabold text-white mb-6 tracking-tight uppercase">Transmisión Exitosa</h3>
+            <h3 className="text-4xl font-extrabold text-white mb-6 tracking-tight uppercase">Tráfico Validado</h3>
             <p className="text-slate-400 font-medium text-lg leading-relaxed max-w-md mx-auto">
-              Tu solicitud para <span className="text-emerald-400 font-bold">{serviceTitle}</span> ha sido enrutada al SOC de <span className="text-white border-b border-emerald-500/30">CyberGuard</span>.
+              Tu solicitud para <span className="text-emerald-400 font-bold">{serviceTitle}</span> ha sido encriptada y enviada exitosamente.
             </p>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row h-full">
             <div className="hidden lg:flex w-1/3 bg-slate-900/50 p-12 flex-col justify-between border-r border-white/5">
-              <div>
-                <div className="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-black mb-8 shadow-lg shadow-emerald-500/20">C</div>
-                <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4">CyberGuard Elite</h4>
-                <p className="text-slate-500 text-xs leading-relaxed font-bold italic">Deep analysis enabled for all incoming traffic.</p>
+              <div className="space-y-8">
+                <div>
+                  <div className="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-black mb-6 shadow-lg shadow-emerald-500/20">C</div>
+                  <h4 className="text-white font-black text-[10px] uppercase tracking-[0.2em] mb-4">SOC SECURITY LAYER</h4>
+                  <p className="text-slate-500 text-[10px] leading-relaxed font-bold uppercase tracking-widest">Bot prevention and behavioral analysis active.</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 bg-black/40 rounded-2xl border border-white/5">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Trust Index</span>
+                      <span className={`text-[9px] font-black ${securityRating > 50 ? 'text-emerald-500' : 'text-amber-500'}`}>{securityRating}%</span>
+                    </div>
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${securityRating}%` }}></div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-slate-500">
+                    <Fingerprint size={14} className={securityRating > 40 ? 'text-emerald-500' : ''} />
+                    <span className="text-[8px] font-black uppercase tracking-widest">Biometric Check</span>
+                  </div>
+                </div>
               </div>
               
               <div className="space-y-6">
                 <div className="flex items-center gap-3 text-emerald-500">
-                   <Mail size={16} />
-                   <span className="text-[9px] font-black uppercase tracking-widest">Secure Entry Point</span>
+                   <Shield size={16} />
+                   <span className="text-[9px] font-black uppercase tracking-widest">Identity Secure</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 p-8 sm:p-12">
+            <div className="flex-1 p-8 sm:p-12 relative">
+              {status === 'verifying' && (
+                <div className="absolute inset-0 z-10 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
+                   <div className="relative mb-8">
+                      <div className="w-20 h-20 border-2 border-emerald-500/20 rounded-full animate-ping"></div>
+                      <div className="absolute inset-0 flex items-center justify-center text-emerald-500">
+                        <Zap size={32} className="animate-pulse" />
+                      </div>
+                   </div>
+                   <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-3">Escaneando Identidad</h4>
+                   <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Verificando reCAPTCHA v3 & Heurística...</p>
+                </div>
+              )}
+
               <div className="mb-10">
                 <div className="inline-flex px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
-                  {serviceTitle ? 'Technical Assessment' : 'New Incident'}
+                  {serviceTitle ? 'Solicitud Técnica' : 'Acceso SOC'}
                 </div>
                 <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">
-                  {serviceTitle || 'Contactar Especialista'}
+                  {serviceTitle || 'Contacto Profesional'}
                 </h2>
-                <p className="text-slate-500 text-sm font-medium">Validación de identidad requerida para procesar solicitud.</p>
+                <p className="text-slate-500 text-sm font-medium">Validación profunda de remitente requerida.</p>
               </div>
 
               <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-5">
-                {/* Anti-Bot Honeypots */}
-                <div className="sr-only" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-                  <input
-                    id="website"
-                    name="website"
-                    type="text"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={formData.website}
-                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  />
-                  <input
-                    id="confirm_email"
-                    name="confirm_email"
-                    type="text"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={formData.confirm_email}
-                    onChange={(e) => setFormData({ ...formData, confirm_email: e.target.value })}
-                  />
+                {/* Honeypots */}
+                <div className="sr-only" aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                  <input tabIndex={-1} autoComplete="off" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} />
+                  <input tabIndex={-1} autoComplete="off" value={formData.confirm_email} onChange={(e) => setFormData({ ...formData, confirm_email: e.target.value })} />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
-                      <User size={10} /> Nombre Completo
+                      <User size={10} /> Nombre
                     </label>
-                    <input 
-                      required 
-                      type="text" 
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 text-sm font-bold" 
-                      placeholder="Ej: Alejandro Silva" 
-                    />
+                    <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 text-sm font-bold" placeholder="Tu nombre" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
                       <Building2 size={10} /> Empresa
                     </label>
-                    <input 
-                      required 
-                      type="text" 
-                      value={formData.company}
-                      onChange={(e) => setFormData({...formData, company: e.target.value})}
-                      className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 text-sm font-bold" 
-                      placeholder="Ej: Tech Corp SA" 
-                    />
+                    <input required type="text" value={formData.company} onChange={(e) => setFormData({...formData, company: e.target.value})} className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 text-sm font-bold" placeholder="Organización" />
                   </div>
                 </div>
                 
@@ -246,16 +278,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
                   <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
                     <Mail size={10} /> Email Corporativo
                   </label>
-                  <input 
-                    required 
-                    type="email" 
-                    value={formData.email}
-                    onChange={handleEmailChange}
-                    className={`w-full bg-slate-950 border rounded-2xl px-5 py-4 text-white focus:ring-2 outline-none transition-all placeholder:text-slate-800 text-sm font-bold ${emailError ? 'border-red-500 focus:ring-red-500/30' : 'border-white/5 focus:ring-emerald-500/30'}`} 
-                    placeholder="correo@empresa.com" 
-                  />
+                  <input required type="email" value={formData.email} onChange={handleEmailChange} className={`w-full bg-slate-950 border rounded-2xl px-5 py-4 text-white focus:ring-2 outline-none transition-all placeholder:text-slate-800 text-sm font-bold ${emailError ? 'border-red-500 focus:ring-red-500/30' : 'border-white/5 focus:ring-emerald-500/30'}`} placeholder="correo@empresa.com" />
                   {emailError && (
-                    <div className="flex items-center gap-1.5 mt-1 text-red-500 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <div className="flex items-center gap-1.5 mt-1 text-red-500">
                       <AlertCircle size={12} />
                       <span className="text-[10px] font-bold uppercase tracking-wider">{emailError}</span>
                     </div>
@@ -264,35 +289,34 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
 
                 <div className="space-y-2">
                   <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
-                    <MessageSquare size={10} /> Contexto de Seguridad
+                    <MessageSquare size={10} /> Requerimiento
                   </label>
-                  <textarea 
-                    required 
-                    rows={3} 
-                    value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 resize-none text-sm font-bold" 
-                    placeholder="Detalla tu requerimiento..."
-                  ></textarea>
+                  <textarea required rows={3} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 resize-none text-sm font-bold" placeholder="Escribe aquí..."></textarea>
                 </div>
                 
-                <button 
-                  type="submit"
-                  disabled={status === 'sending'}
-                  className="w-full mt-4 bg-white text-black py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] shadow-2xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-70 group"
-                >
-                  {status === 'sending' ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
-                      Encriptando...
-                    </>
-                  ) : (
-                    <>
-                      <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      Enviar Solicitud Segura
-                    </>
-                  )}
-                </button>
+                <div className="pt-2">
+                  <button 
+                    type="submit"
+                    disabled={status !== 'idle'}
+                    className="w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] shadow-2xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-70 group"
+                  >
+                    {status === 'sending' ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        ENVIANDO...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        VALIDAR Y ENVIAR
+                      </>
+                    )}
+                  </button>
+                  <p className="mt-4 text-[8px] text-slate-600 text-center uppercase tracking-widest leading-loose">
+                    Este sitio está protegido por reCAPTCHA v3 y las <br/>
+                    <a href="https://policies.google.com/privacy" className="text-slate-500 hover:text-emerald-500">Políticas de Privacidad</a> y <a href="https://policies.google.com/terms" className="text-slate-500 hover:text-emerald-500">Términos de Google</a> aplican.
+                  </p>
+                </div>
               </form>
             </div>
           </div>

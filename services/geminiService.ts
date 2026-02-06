@@ -7,6 +7,8 @@ export interface ThreatIntel {
   technicalDetails: string;
   attackerProfile: string;
   recommendedCountermeasure: string;
+  confidenceScore: number;
+  mitigationPriority: 'Low' | 'Medium' | 'High' | 'Immediate';
 }
 
 export interface ResourceNotice {
@@ -48,13 +50,11 @@ const handleApiError = (error: any, lang: Language) => {
 };
 
 export const getSecurityAdvice = async (userInput: string, lang: Language): Promise<SecurityAdvice> => {
-  // Use process.env.API_KEY directly as per guidelines
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const isEs = lang === 'es';
   
   try {
     const response = await ai.models.generateContent({
-      // Using gemini-3-pro-preview for complex infrastructure reasoning
       model: "gemini-3-pro-preview",
       contents: isEs 
         ? `Analiza la siguiente descripción de infraestructura y proporciona consejos en ESPAÑOL: ${userInput}`
@@ -80,14 +80,13 @@ export const getSecurityAdvice = async (userInput: string, lang: Language): Prom
 };
 
 export const generateThreatIntel = async (threatType: string, lang: Language): Promise<ThreatIntel> => {
-  // Use process.env.API_KEY directly as per guidelines
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const isEs = lang === 'es';
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Generate a detailed report for the threat: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
+      contents: `Generate a high-level tactical intelligence report for the threat: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}. Provide realistic confidence scores and priorities.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -97,8 +96,10 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
             technicalDetails: { type: Type.STRING },
             attackerProfile: { type: Type.STRING },
             recommendedCountermeasure: { type: Type.STRING },
+            confidenceScore: { type: Type.NUMBER, description: "A value from 0 to 100 indicating AI certainty." },
+            mitigationPriority: { type: Type.STRING, enum: ['Low', 'Medium', 'High', 'Immediate'] }
           },
-          required: ["title", "technicalDetails", "attackerProfile", "recommendedCountermeasure"],
+          required: ["title", "technicalDetails", "attackerProfile", "recommendedCountermeasure", "confidenceScore", "mitigationPriority"],
         },
       },
     });
@@ -109,7 +110,6 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
 };
 
 export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNotice[]> => {
-  // Use process.env.API_KEY directly as per guidelines
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const isEs = lang === 'es';
 
@@ -130,7 +130,7 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
               summary: { type: Type.STRING },
               impact: { type: Type.STRING, enum: ['Low', 'Medium', 'High', 'Critical'] },
               date: { type: Type.STRING },
-              link: { type: Type.STRING }, // Field for source link
+              link: { type: Type.STRING },
             },
             required: ["firm", "title", "summary", "impact", "date"],
           },
@@ -139,12 +139,9 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
     });
 
     const notices = parseResponse<ResourceNotice[]>(response.text);
-
-    // Extract grounding URLs from metadata to fulfill the grounding rule
     const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (groundingChunks && groundingChunks.length > 0) {
       notices.forEach((notice, index) => {
-        // Map available search links to the results
         if (!notice.link && groundingChunks[index]?.web?.uri) {
           notice.link = groundingChunks[index].web.uri;
         }

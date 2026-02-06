@@ -5,30 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { generateThreatIntel, ThreatIntel } from '../services/geminiService';
 import { Language, ThreatAlert } from '../types';
 import { THREAT_WEIGHTS, getSeverity } from '../constants';
-import { Shield, Zap, Target, Cpu, Activity, Database, Network, Search, HardDrive, Lock, AlertTriangle, ChevronDown, ChevronUp, BrainCircuit, Loader2 } from 'lucide-react';
+// Added missing Terminal icon to the imports
+import { Shield, Zap, Target, Cpu, Activity, Database, Network, Search, HardDrive, Lock, AlertTriangle, ChevronDown, ChevronUp, BrainCircuit, Loader2, Fingerprint, FileText, Info, Terminal } from 'lucide-react';
 
 interface ThreatMonitorProps {
   lang: Language;
 }
-
-const SIMULATED_INTEL: Record<string, ThreatIntel[]> = {
-  en: [
-    {
-      title: "Advanced Persistent Threat (APT) Detected",
-      technicalDetails: "Pattern matching suggests a lateral movement attempt using compromised service accounts. High-frequency pings detected on internal VLAN 4.",
-      attackerProfile: "Nation-state actor / Industrial Espionage Group",
-      recommendedCountermeasure: "Isolate VLAN 4 and rotate all service account credentials immediately."
-    }
-  ],
-  es: [
-    {
-      title: "Amenaza Persistente Avanzada (APT) Detectada",
-      technicalDetails: "El análisis de patrones sugiere un intento de movimiento lateral utilizando cuentas de servicio comprometidas. Pings de alta frecuencia detectados en la VLAN interna 4.",
-      attackerProfile: "Actor estatal / Grupo de espionaje industrial",
-      recommendedCountermeasure: "Aislar la VLAN 4 y rotar todas las credenciales de las cuentas de servicio de inmediato."
-    }
-  ]
-};
 
 const generateData = () => {
   return Array.from({ length: 30 }, (_, i) => ({
@@ -73,7 +55,7 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
     return Math.round(activeAlerts.reduce((acc, curr) => acc + curr.score, 0) / activeAlerts.length);
   }, [activeAlerts]);
 
-  // Global AI Summary
+  // Global AI Summary for the most recent high-level threat
   const { data: globalIntel } = useQuery<ThreatIntel, Error>({
     queryKey: ['globalThreatIntel', activeAlerts[0]?.type || "Baseline", lang],
     queryFn: () => generateThreatIntel(activeAlerts[0]?.type || "Baseline", lang),
@@ -134,6 +116,15 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
     }
   };
 
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'Immediate': return 'text-rose-500 border-rose-500/30 bg-rose-500/5';
+      case 'High': return 'text-orange-400 border-orange-400/30 bg-orange-400/5';
+      case 'Medium': return 'text-blue-400 border-blue-400/30 bg-blue-400/5';
+      default: return 'text-slate-400 border-slate-400/30 bg-slate-400/5';
+    }
+  };
+
   const handleAnalyzeAlert = async (alert: ThreatAlert) => {
     if (alertIntel[alert.id]) {
       setExpandedAlertId(expandedAlertId === alert.id ? null : alert.id);
@@ -158,6 +149,7 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
         
         {/* Main Telemetry Graph */}
         <div className="lg:col-span-7 bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-8 relative overflow-hidden group">
+          <div className="scanner-line"></div>
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/20 via-emerald-500/20 to-blue-500/20"></div>
           
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
@@ -212,7 +204,9 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
 
         {/* AI Global Diagnosis Panel */}
         <div className="lg:col-span-5 bg-[#0f172a] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
-          <div className="scanner-line"></div>
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+             <BrainCircuit size={120} className="text-emerald-500" />
+          </div>
           
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
@@ -234,14 +228,14 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
                </div>
             ) : (
               <div className="animate-in fade-in duration-700">
-                <div className="bg-slate-950/50 p-6 rounded-3xl border border-white/5 mb-6">
-                  <h4 className="text-emerald-400 font-black uppercase text-xs tracking-widest flex items-center gap-2 mb-4">
+                <div className="bg-slate-950/50 p-6 rounded-3xl border border-white/5 mb-6 relative overflow-hidden">
+                  <h4 className="text-emerald-400 font-black uppercase text-xs tracking-widest flex items-center gap-2 mb-4 relative z-10">
                     <BrainCircuit size={14} /> {globalIntel.title}
                   </h4>
-                  <p className="text-xs text-slate-300 leading-relaxed font-medium italic mb-4">
+                  <p className="text-xs text-slate-300 leading-relaxed font-medium italic mb-4 relative z-10">
                     {globalIntel.attackerProfile}
                   </p>
-                  <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden relative z-10">
                     <div className="bg-emerald-500 h-full w-[85%]"></div>
                   </div>
                 </div>
@@ -263,9 +257,13 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
         <div className="lg:col-span-12 space-y-4">
           <div className="flex items-center justify-between px-2">
             <h4 className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Live Threat Stream</h4>
-            <div className="flex items-center gap-2">
-               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-               <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Systems Nominal</span>
+            <div className="flex items-center gap-4">
+               <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Systems Nominal</span>
+               </div>
+               <div className="h-4 w-px bg-white/5"></div>
+               <span className="text-[9px] font-mono text-slate-500">{activeAlerts.length} NODES MONITORING</span>
             </div>
           </div>
 
@@ -292,7 +290,7 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
 
                       <div className="flex items-center gap-6">
                         <div className="hidden sm:flex flex-col items-end">
-                           <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Vector Score</span>
+                           <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Inbound Score</span>
                            <span className={`text-xs font-black mono ${getSeverityColor(alert.severity).split(' ')[0]}`}>{alert.score}</span>
                         </div>
                         
@@ -306,38 +304,88 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
                           }`}
                         >
                           {isAnalyzing ? <Loader2 size={12} className="animate-spin" /> : <BrainCircuit size={12} />}
-                          {isAnalyzing ? (isEs ? 'ANALIZANDO...' : 'ANALYZING...') : (isEs ? 'ANALIZAR' : 'ANALYZE')}
+                          {isAnalyzing ? (isEs ? 'ESCANEANDO...' : 'SCANNING...') : (isEs ? 'GENERAR INTEL' : 'GENERATE INTEL')}
                           {isExpanded ? <ChevronUp size={12} className="ml-1" /> : <ChevronDown size={12} className="ml-1" />}
                         </button>
                       </div>
                     </div>
 
-                    {/* Detailed Intel Collapsible Section */}
+                    {/* AI Intelligence Briefing Section */}
                     {isExpanded && intel && (
-                      <div className="bg-slate-950 border-x border-b border-emerald-500/30 rounded-b-2xl p-6 animate-in slide-in-from-top-4 duration-300">
-                         <div className="grid md:grid-cols-2 gap-8">
-                            <div className="space-y-4">
-                               <div className="space-y-1">
-                                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Tactical Assessment</p>
-                                  <h5 className="text-sm font-black text-emerald-400 uppercase tracking-tight">{intel.title}</h5>
+                      <div className="bg-slate-950 border-x border-b border-emerald-500/30 rounded-b-2xl p-8 animate-in slide-in-from-top-4 duration-300">
+                         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                            
+                            {/* Technical Briefing Column */}
+                            <div className="md:col-span-8 space-y-6">
+                               <div className="flex items-center gap-4 mb-4">
+                                  <div className="px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+                                    AI Report: Verified
+                                  </div>
+                                  <div className={`px-3 py-1 rounded border text-[9px] font-black uppercase tracking-widest ${getPriorityColor(intel.mitigationPriority)}`}>
+                                    Priority: {intel.mitigationPriority}
+                                  </div>
                                </div>
-                               <div className="space-y-1">
-                                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Technical Signature</p>
-                                  <p className="text-xs text-slate-300 leading-relaxed font-medium">{intel.technicalDetails}</p>
+
+                               <div className="space-y-4">
+                                  <div className="flex items-center gap-2">
+                                     <FileText size={14} className="text-slate-500" />
+                                     <h5 className="text-sm font-black text-white uppercase tracking-tight">{intel.title}</h5>
+                                  </div>
+                                  
+                                  <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                     <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <Terminal size={12} /> Detailed Signatures
+                                     </p>
+                                     <p className="text-[11px] text-slate-300 leading-relaxed font-mono">
+                                        {intel.technicalDetails}
+                                     </p>
+                                  </div>
+
+                                  <div className="flex items-center gap-8">
+                                     <div className="flex flex-col">
+                                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Attacker Profile</span>
+                                        <span className="text-[10px] text-slate-400 font-bold italic">{intel.attackerProfile}</span>
+                                     </div>
+                                     <div className="flex flex-col items-center">
+                                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">AI Certainty</span>
+                                        <div className="flex items-center gap-1.5">
+                                           <div className="w-12 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                              <div className="h-full bg-emerald-500" style={{ width: `${intel.confidenceScore}%` }}></div>
+                                           </div>
+                                           <span className="text-[9px] font-black text-emerald-500 mono">{intel.confidenceScore}%</span>
+                                        </div>
+                                     </div>
+                                  </div>
                                </div>
                             </div>
-                            <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
-                               <div className="mb-4">
-                                  <p className="text-[9px] font-black text-rose-400 uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5">
-                                     <Zap size={10} className="fill-rose-400" /> Mitigation Strategy
-                                  </p>
-                                  <p className="text-xs text-white font-bold leading-relaxed">{intel.recommendedCountermeasure}</p>
-                               </div>
-                               <div className="pt-4 border-t border-white/5">
-                                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Source Context</p>
-                                  <p className="text-[10px] text-slate-400 italic font-medium leading-relaxed">{intel.attackerProfile}</p>
+
+                            {/* Mitigation Action Panel */}
+                            <div className="md:col-span-4">
+                               <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-3xl p-6 h-full flex flex-col justify-between group/mitigate">
+                                  <div>
+                                     <div className="flex items-center gap-2 text-emerald-500 mb-6">
+                                        <Shield size={18} className="animate-pulse" />
+                                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em]">Mitigation Steps</h5>
+                                     </div>
+                                     <p className="text-xs text-white font-extrabold leading-loose">
+                                        {intel.recommendedCountermeasure}
+                                     </p>
+                                  </div>
+                                  
+                                  <div className="mt-8 space-y-3">
+                                     <button 
+                                        onClick={() => console.log(`Executing isolation for ${alert.id}`)}
+                                        className="w-full py-3 bg-white/10 hover:bg-emerald-500 text-white border border-white/5 hover:border-emerald-400 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                                     >
+                                        Execute Isolation
+                                     </button>
+                                     <div className="flex items-center gap-2 text-[8px] font-black text-slate-500 uppercase tracking-widest px-1">
+                                        <Info size={10} /> Policy auto-applied by SOC
+                                     </div>
+                                  </div>
                                </div>
                             </div>
+
                          </div>
                       </div>
                     )}
