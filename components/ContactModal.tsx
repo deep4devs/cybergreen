@@ -89,51 +89,8 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
 
     setStatus('verifying');
 
-    // reCAPTCHA v3 implementation logic
-    let captchaToken = '';
-    try {
-      if (window.grecaptcha) {
-        captchaToken = await window.grecaptcha.execute('6Ld_placeholder_site_key', { action: 'submit_contact' });
-        console.debug('[SOC] reCAPTCHA Token Acquired:', captchaToken);
-      }
-    } catch (err) {
-      console.warn('[SOC] reCAPTCHA failed or blocked. Relying on behavioral heuristics.');
-    }
-
-    // Advanced Bot Scoring
-    const timeDiff = Date.now() - mountTime.current;
-    
-    let typingConsistencyScore = 0;
-    if (keyIntervals.current.length > 5) {
-      const average = keyIntervals.current.reduce((a, b) => a + b) / keyIntervals.current.length;
-      const variance = keyIntervals.current.reduce((a, b) => a + Math.pow(b - average, 2), 0) / keyIntervals.current.length;
-      const stdDev = Math.sqrt(variance);
-      if (stdDev > 8) typingConsistencyScore = 30;
-    }
-
-    const botDetected = 
-      formData.website !== '' || 
-      formData.confirm_email !== '' || 
-      timeDiff < 2500 || 
-      (interactionScore.current < 10 && timeDiff > 800) ||
-      (keyIntervals.current.length > 2 && typingConsistencyScore === 0);
-
     // Artificial delay to simulate "Deep Packet Inspection"
     await new Promise(resolve => setTimeout(resolve, 1500));
-
-    if (botDetected) {
-      console.warn('[CYBERGUARD-SOC] Intercepted automated submission attempt.');
-      setStatus('sending');
-      setTimeout(() => {
-        setStatus('success');
-        setTimeout(() => {
-          setStatus('idle');
-          setFormData({ name: '', company: '', email: '', message: '', website: '', confirm_email: '' });
-          onClose();
-        }, 2000);
-      }, 1500);
-      return;
-    }
 
     if (!validateEmail(formData.email)) {
       setStatus('idle');
@@ -142,15 +99,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
     }
 
     setStatus('sending');
-    
-    console.debug(`[SOC-ROUTING] Secure Transmission Initiated`, {
-      ...formData,
-      telemetry: {
-        interaction_score: interactionScore.current,
-        captcha_present: !!captchaToken,
-        trust_index: securityRating
-      }
-    });
     
     setTimeout(() => {
       setStatus('success');
@@ -212,40 +160,12 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
                       <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${securityRating}%` }}></div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-3 text-slate-500">
-                    <Fingerprint size={14} className={securityRating > 40 ? 'text-emerald-500' : ''} />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Biometric Check</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 text-emerald-500">
-                   <Shield size={16} />
-                   <span className="text-[9px] font-black uppercase tracking-widest">Identity Secure</span>
                 </div>
               </div>
             </div>
 
             <div className="flex-1 p-8 sm:p-12 relative">
-              {status === 'verifying' && (
-                <div className="absolute inset-0 z-10 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
-                   <div className="relative mb-8">
-                      <div className="w-20 h-20 border-2 border-emerald-500/20 rounded-full animate-ping"></div>
-                      <div className="absolute inset-0 flex items-center justify-center text-emerald-500">
-                        <Zap size={32} className="animate-pulse" />
-                      </div>
-                   </div>
-                   <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-3">Escaneando Identidad</h4>
-                   <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Verificando reCAPTCHA v3 & Heurística...</p>
-                </div>
-              )}
-
               <div className="mb-10">
-                <div className="inline-flex px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
-                  {serviceTitle ? 'Solicitud Técnica' : 'Acceso SOC'}
-                </div>
                 <h2 className="text-3xl font-extrabold text-white tracking-tight mb-2">
                   {serviceTitle || 'Contacto Profesional'}
                 </h2>
@@ -253,12 +173,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
               </div>
 
               <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-5">
-                {/* Honeypots */}
-                <div className="sr-only" aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
-                  <input tabIndex={-1} autoComplete="off" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} />
-                  <input tabIndex={-1} autoComplete="off" value={formData.confirm_email} onChange={(e) => setFormData({ ...formData, confirm_email: e.target.value })} />
-                </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
@@ -273,27 +187,18 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
                     <input required type="text" value={formData.company} onChange={(e) => setFormData({...formData, company: e.target.value})} className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 text-sm font-bold" placeholder="Organización" />
                   </div>
                 </div>
-                
                 <div className="space-y-2">
                   <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
                     <Mail size={10} /> Email Corporativo
                   </label>
                   <input required type="email" value={formData.email} onChange={handleEmailChange} className={`w-full bg-slate-950 border rounded-2xl px-5 py-4 text-white focus:ring-2 outline-none transition-all placeholder:text-slate-800 text-sm font-bold ${emailError ? 'border-red-500 focus:ring-red-500/30' : 'border-white/5 focus:ring-emerald-500/30'}`} placeholder="correo@empresa.com" />
-                  {emailError && (
-                    <div className="flex items-center gap-1.5 mt-1 text-red-500">
-                      <AlertCircle size={12} />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">{emailError}</span>
-                    </div>
-                  )}
                 </div>
-
                 <div className="space-y-2">
                   <label className="text-[9px] font-black uppercase tracking-widest text-slate-600 ml-1 flex items-center gap-2">
                     <MessageSquare size={10} /> Requerimiento
                   </label>
                   <textarea required rows={3} value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full bg-slate-950 border border-white/5 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all placeholder:text-slate-800 resize-none text-sm font-bold" placeholder="Escribe aquí..."></textarea>
                 </div>
-                
                 <div className="pt-2">
                   <button 
                     type="submit"
@@ -312,10 +217,6 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, serviceTit
                       </>
                     )}
                   </button>
-                  <p className="mt-4 text-[8px] text-slate-600 text-center uppercase tracking-widest leading-loose">
-                    Este sitio está protegido por reCAPTCHA v3 y las <br/>
-                    <a href="https://policies.google.com/privacy" className="text-slate-500 hover:text-emerald-500">Políticas de Privacidad</a> y <a href="https://policies.google.com/terms" className="text-slate-500 hover:text-emerald-500">Términos de Google</a> aplican.
-                  </p>
                 </div>
               </form>
             </div>

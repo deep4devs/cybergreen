@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { getSecurityAdvice, QuotaError } from '../services/geminiService';
-import { SecurityAdvice, Language } from '../types';
+import { Language } from '../types';
 import { ThumbsUp, ThumbsDown, Send, CheckCircle2, MessageSquare } from 'lucide-react';
 
 interface AISecurityAdvisorProps {

@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getIsraelCyberNotices, ResourceNotice } from './services/geminiService.ts';
 import { 
   ShieldCheck, Target, Eye, Award, Terminal, Network, Layers, Repeat, 
-  Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio, UserPlus, Info, BookOpen, ExternalLink, Calendar, Zap, MessageSquare, Cloud, Database
+  Globe, ShieldAlert, X, Activity, Cpu, Radio, BookOpen, ExternalLink, Calendar, Zap, MessageSquare, Database
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -248,8 +248,6 @@ const App: React.FC = () => {
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.cloudTitle}</h2>
               <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.cloudDesc}</p>
             </div>
-
-            {/* CNAPP Section */}
             <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
               <div className="flex flex-col md:flex-row gap-12 items-center">
                 <div className="w-full md:w-1/2 space-y-6">
@@ -294,34 +292,10 @@ const App: React.FC = () => {
                           <div className="h-full bg-blue-500 w-[15%]"></div>
                        </div>
                     </div>
-                    <div className="space-y-3">
-                       {[
-                         { name: 'S3 Buckets Public', val: '0', status: 'Safe' },
-                         { name: 'Overprivileged IAM', val: '4', status: 'Action' },
-                         { name: 'Container Vulns', val: '12', status: 'High' }
-                       ].map((stat, i) => (
-                         <div key={i} className="flex justify-between items-center p-3 bg-white/[0.03] rounded-xl">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">{stat.name}</span>
-                            <span className={`text-[10px] font-black uppercase px-2 py-1 rounded border border-white/5 ${stat.status === 'Safe' ? 'text-emerald-500' : 'text-rose-500'}`}>{stat.val}</span>
-                         </div>
-                       ))}
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'Inmutable Infrastructure', desc: isEs ? 'Infraestructura como Código segura y validada.' : 'Secure and validated Infrastructure as Code.', icon: Terminal },
-                 { title: 'Zero-Trust Networking', desc: isEs ? 'Microsegmentación para cargas de trabajo nube.' : 'Microsegmentation for cloud workloads.', icon: Network },
-                 { title: 'Serverless Protection', desc: isEs ? 'Seguridad para funciones AWS Lambda y Azure Functions.' : 'Security for AWS Lambda and Azure Functions.', icon: Cpu },
-                 { title: 'Database Encryption', desc: isEs ? 'Cifrado robusto para bases de datos distribuidas.' : 'Robust encryption for distributed databases.', icon: Database },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="blue-500" />
-               ))}
-            </div>
-
             <div className="pt-16">
                <ServiceGrid 
                   onSelect={setSelectedService} 
@@ -337,69 +311,9 @@ const App: React.FC = () => {
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4">
             <div className="text-center max-w-3xl mx-auto">
-              <div className="text-cyan-500 font-bold text-[10px] tracking-[0.4em] uppercase mb-4">Critical Vector Defense</div>
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.emailTitle}</h2>
               <p className="text-slate-400 text-lg font-medium leading-relaxed">{t.emailDesc}</p>
             </div>
-
-            <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
-              <div className="flex flex-col md:flex-row gap-12 items-center">
-                <div className="w-full md:w-1/2 space-y-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-black uppercase tracking-widest">
-                    <UserPlus size={12} /> Contact Intelligence
-                  </div>
-                  <h3 className="text-3xl font-extrabold text-white">{isEs ? 'Reputación de Contactos' : 'Contact Reputation Engine'}</h3>
-                  <p className="text-slate-400 leading-relaxed font-medium">
-                    {isEs 
-                      ? 'Nuestra IA analiza automáticamente a los remitentes externos basándose en la edad del dominio, configuraciones DMARC y patrones de comportamiento histórico.'
-                      : 'Our AI automatically analyzes external senders based on domain age, DMARC settings, and historical behavior patterns.'}
-                  </p>
-                  <div className="p-6 bg-slate-950/50 rounded-2xl border border-white/5 border-dashed">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Info size={12} /> {isEs ? 'Sugerencia de Solución Externa' : 'External Solution Insight'}
-                    </p>
-                    <p className="text-xs text-slate-400 italic font-medium leading-loose">
-                      {isEs 
-                        ? 'Integramos APIs de inteligencia como Abnormal Security o Mimecast.' 
-                        : 'We integrate intelligence APIs like Abnormal Security or Mimecast.'}
-                    </p>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2 bg-slate-950 p-8 rounded-[2.5rem] border border-white/10 relative">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Analysis Preview</span>
-                      <span className="text-emerald-500 font-bold text-[10px] uppercase">Live Scan</span>
-                    </div>
-                    {[
-                      { email: 'internal-finance@yourcorp.com', status: 'Verified', color: 'text-emerald-400', reason: 'Internal Employee' },
-                      { email: 'invoice-urgent@external-partner.net', status: 'Warning', color: 'text-amber-400', reason: 'New Domain detected (2 days old)' },
-                      { email: 'admin@payment-gateway.biz', status: 'Critical', color: 'text-red-400', reason: 'DMARC Fail / SPF Mismatch' },
-                    ].map((m, i) => (
-                      <div key={i} className="bg-white/5 p-4 rounded-xl flex justify-between items-center group/mail hover:bg-white/10 transition-all">
-                        <div>
-                          <p className="text-[11px] font-bold text-white mb-1">{m.email}</p>
-                          <p className="text-[9px] text-slate-500 font-medium">{m.reason}</p>
-                        </div>
-                        <span className={`text-[9px] font-black uppercase px-2 py-1 rounded border border-white/10 ${m.color}`}>{m.status}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-               {[
-                 { title: 'Anti-Phishing', desc: isEs ? 'Detección de suplantación mediante IA neural.' : 'Impersonation detection via neural AI.', icon: Target },
-                 { title: 'DMARC Suite', desc: isEs ? 'Configuración SPF, DKIM y DMARC a nivel global.' : 'Global SPF, DKIM, and DMARC configuration.', icon: ShieldCheck },
-                 { title: 'Sandbox Analysis', desc: isEs ? 'Ejecución segura de adjuntos sospechosos.' : 'Safe execution of suspicious attachments.', icon: Package },
-                 { title: 'Data Loss Prev.', desc: isEs ? 'Prevención de fuga de información sensible (DLP).' : 'Prevention of sensitive data leakage (DLP).', icon: Search },
-               ].map((item, i) => (
-                 <FeatureCard key={i} item={item} colorClass="cyan-500" />
-               ))}
-            </div>
-
             <div className="pt-16">
                <ServiceGrid 
                   onSelect={setSelectedService} 
@@ -422,29 +336,11 @@ const App: React.FC = () => {
         );
 
       case Page.NIST:
-        const nistPhases = [
-          { phase: 'Identify', icon: Search, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { phase: 'Protect', icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { phase: 'Detect', icon: Zap, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { phase: 'Respond', icon: MessageSquare, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-          { phase: 'Recover', icon: Repeat, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
-        ];
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-5xl font-extrabold text-white mb-6 tracking-tight">{t.nistTitle}</h2>
               <p className="text-slate-400 text-lg leading-relaxed font-medium">{t.nistDesc}</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-              {nistPhases.map((phase, i) => (
-                <div key={i} className="bg-white/5 border border-white/5 p-8 rounded-[2.5rem] text-center group transition-all hover:-translate-y-2 hover:bg-white/[0.08] relative overflow-hidden">
-                  <div className={`absolute -top-4 -right-4 w-16 h-16 ${phase.bg} blur-2xl opacity-0 group-hover:opacity-40 transition-opacity`}></div>
-                  <div className={`w-14 h-14 mx-auto mb-6 rounded-2xl ${phase.bg} flex items-center justify-center ${phase.color} group-hover:scale-110 transition-transform`}>
-                    <phase.icon size={28} />
-                  </div>
-                  <h3 className={`font-black uppercase text-[10px] tracking-[0.2em] ${phase.color}`}>{phase.phase}</h3>
-                </div>
-              ))}
             </div>
             <ServiceGrid onSelect={setSelectedService} onRequestQuote={(s) => openContact(s.title)} services={allServices.filter(s => s.category === 'nist')} lang={lang} />
           </div>
@@ -471,19 +367,6 @@ const App: React.FC = () => {
               </div>
               <p className="text-slate-500 text-lg leading-relaxed max-w-md font-medium">{t.footerDesc}</p>
             </div>
-            <div>
-              <h4 className="text-white font-extrabold text-[11px] uppercase tracking-[0.2em] mb-10">{t.legal}</h4>
-              <ul className="space-y-5 text-xs text-slate-500 font-bold uppercase tracking-widest">
-                <li><a href="#" className="hover:text-emerald-500 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-emerald-500 transition-colors">Service Terms</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-extrabold text-[11px] uppercase tracking-[0.2em] mb-10">{t.contact}</h4>
-              <ul className="space-y-5 text-sm text-slate-500 font-medium">
-                <li className="flex items-center gap-3">contact@cyberguard.mx</li>
-              </ul>
-            </div>
           </div>
         </div>
       </footer>
@@ -495,11 +378,6 @@ const App: React.FC = () => {
             <div className="text-7xl mb-12 text-emerald-400"><selectedService.icon size={64} strokeWidth={1.5} /></div>
             <h3 className="text-4xl font-extrabold text-white mb-8 tracking-tight">{selectedService.title}</h3>
             <p className="text-slate-400 text-lg mb-12 leading-relaxed font-medium">{selectedService.longDescription}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
-              {selectedService.features.map((f, i) => (
-                <div key={i} className="flex items-center gap-4 text-emerald-400 bg-emerald-500/5 p-5 rounded-2xl border border-emerald-500/10"><span className="w-2 h-2 rounded-full bg-emerald-500"></span><span className="text-[11px] font-extrabold uppercase tracking-widest">{f}</span></div>
-              ))}
-            </div>
             <button onClick={() => {openContact(selectedService.title); setSelectedService(null);}} className="w-full bg-emerald-500 text-white py-6 rounded-2xl font-extrabold uppercase tracking-[0.2em] shadow-2xl hover:bg-emerald-400 transition-all text-sm">{t.initDeployment}</button>
           </div>
         </div>

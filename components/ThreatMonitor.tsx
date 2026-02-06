@@ -5,8 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { generateThreatIntel, ThreatIntel } from '../services/geminiService';
 import { Language, ThreatAlert } from '../types';
 import { THREAT_WEIGHTS, getSeverity } from '../constants';
-// Added missing Terminal icon to the imports
-import { Shield, Zap, Target, Cpu, Activity, Database, Network, Search, HardDrive, Lock, AlertTriangle, ChevronDown, ChevronUp, BrainCircuit, Loader2, Fingerprint, FileText, Info, Terminal } from 'lucide-react';
+import { Shield, Target, Cpu, Activity, Database, Network, Search, HardDrive, Lock, AlertTriangle, ChevronDown, ChevronUp, BrainCircuit, Loader2, FileText, Info, Terminal } from 'lucide-react';
 
 interface ThreatMonitorProps {
   lang: Language;
@@ -392,13 +391,6 @@ const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ lang }) => {
                  </div>
                );
              })}
-             
-             {activeAlerts.length === 0 && (
-                <div className="py-12 text-center bg-slate-900/20 border border-white/5 border-dashed rounded-[2rem]">
-                   <Shield className="mx-auto text-slate-800 mb-4" size={32} />
-                   <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em]">Listening for network anomalies...</p>
-                </div>
-             )}
           </div>
         </div>
 

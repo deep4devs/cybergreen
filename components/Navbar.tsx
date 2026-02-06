@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Page, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { ChevronDown, Shield, Globe, Lock, Cpu, Activity, LayoutGrid, Network, Server, Smartphone, BookOpen } from 'lucide-react';
+import { ChevronDown, Shield, Globe, Lock, Cpu, LayoutGrid, Network, Server, Smartphone } from 'lucide-react';
 
 interface NavbarProps {
   currentPage: Page;
