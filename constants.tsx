@@ -1,7 +1,7 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Bot, Terminal, Globe, Mail, Fingerprint, Lock, ShieldAlert, Network, Server, Smartphone, Search, Database, Activity, Layers, ShieldCheck
+  Target, Scale, ClipboardCheck, Cloud, Bot, Terminal, Globe, Mail, Fingerprint, Lock, Network, Server, Smartphone, Layers
 } from 'lucide-react';
 
 export const THREAT_WEIGHTS: Record<string, number> = {
@@ -59,8 +59,8 @@ export const getServices = (lang: Language): SecurityService[] => {
       description: isEs ? 'Endurecimiento extremo para entornos de producción y bases de datos.' : 'Extreme hardening for production environments and databases.',
       icon: Server,
       category: 'servers',
-      longDescription: isEs ? 'Blindaje de sistemas operativos para eliminar vectores de ataque innecesarios y asegurar la integridad del kernel y servicios core.' : 'OS hardening to eliminate unnecessary attack vectors and ensure the integrity of the kernel and core services.',
-      features: isEs ? ['Kernel Hardening', 'Auditd Config', 'FIM Monitoring', 'HIDS'] : ['Kernel Hardening', 'Auditd Config', 'FIM Monitoring', 'HIDS']
+      longDescription: isEs ? 'Blindaje de sistemas operativos para eliminar vectores de ataque innecesarios.' : 'OS hardening to eliminate unnecessary attack vectors.',
+      features: isEs ? ['Kernel Hardening', 'Auditd Config', 'FIM Monitoring'] : ['Kernel Hardening', 'Auditd Config', 'FIM Monitoring']
     },
     {
       id: 'linux-01',
@@ -68,8 +68,8 @@ export const getServices = (lang: Language): SecurityService[] => {
       description: isEs ? 'Blindaje experto para SUSE Linux Enterprise y virtualización segura.' : 'Expert shielding for SUSE Linux Enterprise and secure virtualization.',
       icon: Terminal,
       category: 'linux',
-      longDescription: isEs ? 'Especialistas en endurecimiento de SUSE Linux Enterprise (SLES) y migración de infraestructuras críticas desde entornos como VMware.' : 'Specialists in SUSE Linux Enterprise (SLES) hardening and critical infrastructure migration from environments like VMware.',
-      features: isEs ? ['Hardening SUSE SLES', 'DNS recursivo DNSSEC', 'Migración VMware', 'Virtualización KVM'] : ['SUSE SLES Hardening', 'DNSSEC Recursive DNS', 'VMware Migration', 'KVM Virtualization']
+      longDescription: isEs ? 'Especialistas en endurecimiento de SUSE Linux Enterprise (SLES).' : 'Specialists in SUSE Linux Enterprise (SLES) hardening.',
+      features: isEs ? ['Hardening SUSE SLES', 'DNSSEC', 'KVM Virtualization'] : ['SUSE SLES Hardening', 'DNSSEC', 'KVM Virtualization']
     }
   ];
 };
@@ -78,47 +78,43 @@ export const TRANSLATIONS = {
   es: {
     heroTitle: 'CYBERSEGURIDAD',
     heroFuture: 'AVANZADA',
-    heroDesc: 'Servicios de Cyberseguridad Avanzada con integraciones de IA preventiva para una protección total de infraestructuras críticas.',
-    slogan: 'Digital AI Security for Business Resilience and Profitability',
+    heroDesc: 'Servicios de Cyberseguridad con IA preventiva para protección total de activos críticos.',
+    slogan: 'Digital AI Security for Business Resilience',
     aboutTitle: 'Líderes con Experiencia',
-    aboutDesc: 'Somos una empresa con más de 20 años de experiencia en ciberseguridad, comprometida con la excelencia técnica y la protección de activos globales.',
+    aboutDesc: 'Más de 20 años protegiendo infraestructuras globales con excelencia técnica.',
     experienceYears: '20+ Años',
     experienceText: 'Trayectoria Protegiendo el Futuro',
     btnAI: 'Obtener Escaneo IA',
-    btnServices: 'Explorar Servicios',
+    btnServices: 'Servicios',
     navHome: 'Inicio',
     navServices: 'Servicios',
     navAdvisor: 'Asesor IA',
     navMonitor: 'Monitor Vivo',
     navResource: 'Recursos',
     login: 'Acceso Clientes',
-    footerDesc: 'Protección especializada para activos digitales e infraestructura crítica.',
-    nistTitle: 'Ciberseguridad NIST 2.0',
-    nistDesc: 'Marco de trabajo estándar de la industria para gestionar y reducir el riesgo de ciberseguridad.',
-    resourceTitle: 'Hub de Inteligencia Israelí',
-    resourceDesc: 'Alertas y noticias de última hora del ecosistema de ciberseguridad líder en el mundo.'
+    footerDesc: 'Protección especializada para activos digitales.',
+    resourceTitle: 'Inteligencia Cibernética',
+    resourceDesc: 'Alertas y noticias del ecosistema de seguridad líder.'
   },
   en: {
     heroTitle: 'ADVANCED',
     heroFuture: 'CYBERSECURITY',
-    heroDesc: 'Advanced Cybersecurity Services with preventive AI integrations for total protection of critical infrastructures.',
-    slogan: 'Digital AI Security for Business Resilience and Profitability',
+    heroDesc: 'Cybersecurity Services with preventive AI for total protection of critical assets.',
+    slogan: 'Digital AI Security for Business Resilience',
     aboutTitle: 'Experienced Leaders',
-    aboutDesc: 'We are a company with over 20 years of experience in cybersecurity, committed to technical excellence and the protection of global assets.',
+    aboutDesc: 'Over 20 years protecting global infrastructures with technical excellence.',
     experienceYears: '20+ Years',
     experienceText: 'Protective Legacy for the Future',
     btnAI: 'Get AI Scan',
-    btnServices: 'Explore Services',
+    btnServices: 'Services',
     navHome: 'Home',
     navServices: 'Services',
     navAdvisor: 'AI Advisor',
     navMonitor: 'Live Monitor',
     navResource: 'Resources',
     login: 'Client Login',
-    footerDesc: 'Specialized protection for digital assets and critical infrastructure.',
-    nistTitle: 'NIST 2.0 Cybersecurity',
-    nistDesc: 'Industry standard framework for managing and reducing cybersecurity risk.',
-    resourceTitle: 'Israeli Intelligence Hub',
-    resourceDesc: 'Latest breakthroughs and security alerts from the world\'s premier cybersecurity ecosystem.'
+    footerDesc: 'Specialized protection for digital assets.',
+    resourceTitle: 'Cyber Intelligence',
+    resourceDesc: 'Breaking alerts from the leading security ecosystem.'
   }
 };

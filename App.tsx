@@ -9,19 +9,16 @@ import { Page, SecurityService, Language } from './types.ts';
 import { getServices, TRANSLATIONS } from './constants.tsx';
 import { useQuery } from '@tanstack/react-query';
 import { getIsraelCyberNotices, ResourceNotice } from './services/geminiService.ts';
-import { ShieldCheck, Target, Eye, Award, Globe, ShieldAlert, X, Radio, BookOpen, ExternalLink, Calendar } from 'lucide-react';
+import { ShieldCheck, Target, Radio, ExternalLink, Calendar } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const [lang, setLang] = useState<Language>('es');
-  const [selectedService, setSelectedService] = useState<SecurityService | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [contactServiceTitle, setContactServiceTitle] = useState<string | undefined>();
 
   const t = TRANSLATIONS[lang];
   const allServices = getServices(lang);
-
-  const toggleLang = () => setLang(prev => prev === 'es' ? 'en' : 'es');
 
   const { data: notices, isLoading: loadingNotices } = useQuery<ResourceNotice[]>({
     queryKey: ['israelNotices', lang],
@@ -33,7 +30,7 @@ const App: React.FC = () => {
     switch (currentPage) {
       case Page.Home:
         return (
-          <div className="space-y-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className="space-y-32 animate-in fade-in duration-700">
             <header className="text-center py-10 px-4 relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none"></div>
               <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 tracking-tighter leading-[1.1] relative z-10">
@@ -57,21 +54,16 @@ const App: React.FC = () => {
                 <h2 className="text-3xl font-extrabold text-white mb-6 tracking-tight">{t.aboutTitle}</h2>
                 <p className="text-slate-400 text-lg leading-relaxed font-medium">{t.aboutDesc}</p>
               </div>
-              <div className="grid grid-cols-1 gap-6">
-                <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] hover:bg-white/[0.04] transition-all">
-                   <div className="flex items-start gap-6">
-                      <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0"><Target size={24} /></div>
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-3">Misión</h3>
-                        <p className="text-slate-500 text-sm font-medium leading-relaxed">Garantizar la continuidad del negocio mediante tecnología de vanguardia.</p>
-                      </div>
-                   </div>
+              <div className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] flex items-start gap-6">
+                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 shrink-0"><Target size={24} /></div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-3">Misión</h3>
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed">Garantizar la continuidad del negocio mediante tecnología avanzada.</p>
                 </div>
               </div>
             </section>
           </div>
         );
-
       case Page.Monitor:
         return (
           <div className="animate-in fade-in duration-1000 px-4 max-w-[1600px] mx-auto pb-20">
@@ -84,7 +76,6 @@ const App: React.FC = () => {
              </div>
           </div>
         );
-
       case Page.Resource:
         return (
           <div className="space-y-16 animate-in fade-in duration-700 px-4 max-w-6xl mx-auto pb-20">
@@ -109,21 +100,17 @@ const App: React.FC = () => {
             </div>
           </div>
         );
-
       case Page.Advisor:
         return <AISecurityAdvisor lang={lang} />;
-      
       case Page.Services:
-        return <ServiceGrid onSelect={setSelectedService} onRequestQuote={(s) => {setContactServiceTitle(s.title); setIsContactOpen(true);}} services={allServices} lang={lang} />;
-
-      default:
-        return null;
+        return <ServiceGrid onSelect={() => {}} onRequestQuote={(s) => {setContactServiceTitle(s.title); setIsContactOpen(true);}} services={allServices} lang={lang} />;
+      default: return null;
     }
   };
 
   return (
     <div className="min-h-screen pb-20">
-      <Navbar currentPage={currentPage} onPageChange={setCurrentPage} lang={lang} onLangToggle={toggleLang} />
+      <Navbar currentPage={currentPage} onPageChange={setCurrentPage} lang={lang} onLangToggle={() => setLang(l => l === 'es' ? 'en' : 'es')} />
       <main className="max-w-7xl mx-auto px-6 pt-44">{renderContent()}</main>
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} serviceTitle={contactServiceTitle} />
     </div>
