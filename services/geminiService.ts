@@ -37,17 +37,17 @@ export const getSecurityAdvice = async (userInput: string, lang: Language): Prom
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: isEs 
-      ? `Analiza esta infraestructura y da consejos en ESPAÑOL: ${userInput}`
-      : `Analyze this infrastructure and provide advice in ENGLISH: ${userInput}`,
+      ? `Analiza esta infraestructura y da consejos de ciberseguridad en ESPAÑOL: ${userInput}`
+      : `Analyze this infrastructure and provide cybersecurity advice in ENGLISH: ${userInput}`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          riskLevel: { type: Type.STRING },
-          summary: { type: Type.STRING },
-          recommendedServices: { type: Type.ARRAY, items: { type: Type.STRING } },
-          immediateSteps: { type: Type.ARRAY, items: { type: Type.STRING } },
+          riskLevel: { type: Type.STRING, description: "Risk level (Low, Medium, High, Critical)" },
+          summary: { type: Type.STRING, description: "Detailed executive summary" },
+          recommendedServices: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of recommended services" },
+          immediateSteps: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Immediate steps for mitigation" },
         },
         required: ["riskLevel", "summary", "recommendedServices", "immediateSteps"],
       },
@@ -62,7 +62,7 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Detailed tactical report for: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
+    contents: `Detailed tactical security report for: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
@@ -87,8 +87,8 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
   const isEs = lang === 'es';
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: `Summarize 4 recent major cybersecurity notices from Israeli firms. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
+    model: "gemini-3-pro-preview",
+    contents: `List 4 recent major cybersecurity notices from Israeli firms (e.g., Check Point, Wiz, SentinelOne). Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}. Use current web information.`,
     config: {
       tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
