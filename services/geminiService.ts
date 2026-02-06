@@ -40,7 +40,12 @@ const handleApiError = (error: any, lang: Language) => {
 };
 
 export const getSecurityAdvice = async (userInput: string, lang: Language): Promise<SecurityAdvice> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("Security Engine configuration missing: API_KEY not found.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   const isEs = lang === 'es';
   
   try {
@@ -74,7 +79,12 @@ export const getSecurityAdvice = async (userInput: string, lang: Language): Prom
 };
 
 export const generateThreatIntel = async (threatType: string, lang: Language): Promise<ThreatIntel> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("Intelligence Engine configuration missing: API_KEY not found.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   const isEs = lang === 'es';
 
   try {

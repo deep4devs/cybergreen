@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import ServiceGrid from './components/ServiceGrid';
-import ThreatMonitor from './components/ThreatMonitor';
-import AISecurityAdvisor from './components/AISecurityAdvisor';
-import ContactModal from './components/ContactModal';
-import { Page, SecurityService, Language } from './types';
-import { getServices, TRANSLATIONS } from './constants';
+import Navbar from './components/Navbar.tsx';
+import ServiceGrid from './components/ServiceGrid.tsx';
+import ThreatMonitor from './components/ThreatMonitor.tsx';
+import AISecurityAdvisor from './components/AISecurityAdvisor.tsx';
+import ContactModal from './components/ContactModal.tsx';
+import { Page, SecurityService, Language } from './types.ts';
+import { getServices, TRANSLATIONS } from './constants.tsx';
 import { 
   ShieldCheck, Target, Eye, Gem, Award, Terminal, Network, Layers, Repeat, 
   Globe, ShieldAlert, Mail, Lock, Fingerprint, UserCheck, Key, Search, Package, Plus, X, Server, Smartphone, Activity, Cpu, Users, BarChart3, Radio
@@ -58,7 +58,6 @@ const App: React.FC = () => {
       case Page.Home:
         return (
           <div className="space-y-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            {/* Hero Section */}
             <header className="text-center py-10 px-4 relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none"></div>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10 text-emerald-500 text-[10px] font-extrabold tracking-[0.2em] uppercase mb-10 relative z-10">
@@ -91,7 +90,6 @@ const App: React.FC = () => {
               </div>
             </header>
 
-            {/* Experience Section */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="relative group">
                 <div className="absolute -inset-4 bg-emerald-500/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
@@ -144,7 +142,6 @@ const App: React.FC = () => {
               </div>
             </section>
 
-            {/* SOC Preview */}
             <section className="glass p-8 sm:p-12 rounded-[3rem] shadow-3xl">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">
                 <h2 className="text-3xl font-extrabold text-white tracking-tight">{t.socTitle}</h2>
@@ -182,7 +179,6 @@ const App: React.FC = () => {
               <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10 relative overflow-hidden">
                 <div className="scanner-line"></div>
                 
-                {/* Visual Header for Monitor */}
                 <div className="flex flex-wrap items-center justify-between mb-12 gap-6 relative z-10">
                    <div className="flex items-center gap-8">
                       <div className="space-y-1">
@@ -206,7 +202,6 @@ const App: React.FC = () => {
                 
                 <ThreatMonitor lang={lang} />
 
-                {/* Extended Command Widgets */}
                 <div className="mt-16 pt-12 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
                    {[
                      { label: 'Network Integrity', val: '99.98%', icon: Activity, color: 'text-emerald-500' },
@@ -613,7 +608,6 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Detail Modal */}
       {selectedService && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="bg-[#0f172a] border border-white/10 rounded-[3rem] w-full max-w-3xl p-12 relative shadow-4xl overflow-hidden max-h-[90vh] overflow-y-auto no-scrollbar">
