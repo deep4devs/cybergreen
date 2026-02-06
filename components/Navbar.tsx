@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Page, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
-import { ChevronDown, Shield, Globe, Lock, Cpu, Activity, LayoutGrid } from 'lucide-react';
+import { ChevronDown, Shield, Globe, Lock, Cpu, Activity, LayoutGrid, Network, Server, Smartphone } from 'lucide-react';
 
 interface NavbarProps {
   currentPage: Page;
@@ -46,6 +46,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onPageChange, lang, onLang
         { label: t.navCloud, id: Page.CloudSecurity, icon: Globe },
         { label: t.navDNS, id: Page.DNSSecurity, icon: Shield },
         { label: t.navEmail, id: Page.EmailSecurity, icon: Lock },
+        { label: t.navNetworking || (lang === 'es' ? 'Redes' : 'Networking'), id: Page.Networking, icon: Network },
+        { label: t.navServers || (lang === 'es' ? 'Servidores' : 'Servers'), id: Page.Servers, icon: Server },
+        { label: t.navEndpoints || (lang === 'es' ? 'Endpoints' : 'Endpoints'), id: Page.Endpoints, icon: Smartphone },
       ]
     },
     { 

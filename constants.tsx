@@ -1,7 +1,7 @@
 
 import { SecurityService, Language } from './types';
 import { 
-  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu, Globe, Mail, Fingerprint, Lock, ShieldAlert, Key, UserCheck, Search
+  Target, Scale, ClipboardCheck, Cloud, Package, Bot, Gavel, AlertTriangle, Terminal, Cpu, Globe, Mail, Fingerprint, Lock, ShieldAlert, Key, UserCheck, Search, Network, Server, Smartphone, HardDrive
 } from 'lucide-react';
 
 export const getServices = (lang: Language): SecurityService[] => {
@@ -114,6 +114,33 @@ export const getServices = (lang: Language): SecurityService[] => {
       category: 'identity',
       longDescription: isEs ? 'Protegemos el perímetro de identidad mediante MFA robusto, Single Sign-On (SSO) y análisis de comportamiento de usuario.' : 'We protect the identity perimeter through robust MFA, Single Sign-On (SSO), and user behavior analytics.',
       features: isEs ? ['MFA Biométrico', 'SSO Centralizado', 'Privileged Access Mgmt', 'Zero Trust Network Access'] : ['Biometric MFA', 'Centralized SSO', 'Privileged Access Mgmt', 'Zero Trust Network Access']
+    },
+    {
+      id: 'net-01',
+      title: isEs ? 'Defensa de Redes' : 'Networking Defense',
+      description: isEs ? 'Segmentación de red avanzada y firewalls de próxima generación (NGFW).' : 'Advanced network segmentation and next-generation firewalls (NGFW).',
+      icon: Network,
+      category: 'networking',
+      longDescription: isEs ? 'Diseñamos y protegemos topologías de red críticas con microsegmentación y detección de intrusiones en tiempo real.' : 'We design and protect critical network topologies with microsegmentation and real-time intrusion detection.',
+      features: isEs ? ['Microsegmentación', 'IDS/IPS Perimetral', 'VLAN Hardening', 'SD-WAN Segura'] : ['Microsegmentation', 'Perimeter IDS/IPS', 'VLAN Hardening', 'Secure SD-WAN']
+    },
+    {
+      id: 'srv-01',
+      title: isEs ? 'Protección de Servidores' : 'Server Security',
+      description: isEs ? 'Endurecimiento de sistemas operativos y protección de cargas críticas.' : 'OS hardening and protection for critical workloads.',
+      icon: Server,
+      category: 'servers',
+      longDescription: isEs ? 'Blindaje total para entornos de servidor físicos y virtuales, asegurando la integridad de las aplicaciones core.' : 'Total shielding for physical and virtual server environments, ensuring core application integrity.',
+      features: isEs ? ['FIM (Integridad)', 'Patch Management', 'Blindaje de Kernel', 'HIDS'] : ['FIM (Integrity)', 'Patch Management', 'Kernel Shielding', 'HIDS']
+    },
+    {
+      id: 'end-01',
+      title: isEs ? 'Seguridad de Endpoints' : 'Endpoint Protection',
+      description: isEs ? 'EDR/XDR avanzado para la protección de dispositivos finales.' : 'Advanced EDR/XDR for endpoint protection.',
+      icon: Smartphone,
+      category: 'endpoints',
+      longDescription: isEs ? 'Protección total para laptops, móviles y estaciones de trabajo mediante agentes inteligentes de detección y respuesta.' : 'Total protection for laptops, mobiles, and workstations through intelligent detection and response agents.',
+      features: isEs ? ['EDR de Nueva Gen', 'Control de Dispositivos', 'Antivirus Neural', 'Remote Wipe'] : ['Next-Gen EDR', 'Device Control', 'Neural Antivirus', 'Remote Wipe']
     }
   ];
 };
@@ -155,6 +182,9 @@ export const TRANSLATIONS = {
     navDNS: 'Seguridad DNS',
     navEmail: 'Seguridad Email',
     navIdentity: 'Seguridad Identidad',
+    navNetworking: 'Seguridad Redes',
+    navServers: 'Seguridad Servidores',
+    navEndpoints: 'Seguridad Endpoints',
     login: 'Acceso Clientes',
     footerDesc: 'Protección especializada para activos digitales e infraestructura crítica.',
     legal: 'Legal',
@@ -174,6 +204,12 @@ export const TRANSLATIONS = {
     emailDesc: 'Protección total para el vector de ataque más explotado: el correo electrónico.',
     identityTitle: 'Identidad & Zero Trust',
     identityDesc: 'Asegurando que solo las personas correctas accedan a los recursos correctos.',
+    networkingTitle: 'Defensa de Redes Críticas',
+    networkingDesc: 'Blindaje de la capa de transporte y segmentación lógica de activos empresariales.',
+    serversTitle: 'Hardening de Servidores',
+    serversDesc: 'Endurecimiento extremo para entornos de producción y bases de datos.',
+    endpointsTitle: 'Protección de Dispositivos',
+    endpointsDesc: 'Seguridad total para la fuerza de trabajo remota y dispositivos móviles.',
     initDeployment: 'Iniciar Despliegue',
     requestInfo: 'Solicitar Información'
   },
@@ -213,6 +249,9 @@ export const TRANSLATIONS = {
     navDNS: 'DNS Security',
     navEmail: 'Email Security',
     navIdentity: 'Identity Security',
+    navNetworking: 'Networking Security',
+    navServers: 'Server Security',
+    navEndpoints: 'Endpoint Security',
     login: 'Client Login',
     footerDesc: 'Specialized protection for digital assets and critical infrastructure.',
     legal: 'Legal',
@@ -232,6 +271,12 @@ export const TRANSLATIONS = {
     emailDesc: 'Total protection for the most exploited attack vector: email.',
     identityTitle: 'Identity & Zero Trust',
     identityDesc: 'Ensuring only the right people access the right resources.',
+    networkingTitle: 'Critical Network Defense',
+    networkingDesc: 'Shielding the transport layer and logical segmentation of corporate assets.',
+    serversTitle: 'Server Hardening',
+    serversDesc: 'Extreme hardening for production environments and databases.',
+    endpointsTitle: 'Device Protection',
+    endpointsDesc: 'Total security for remote workforce and mobile devices.',
     initDeployment: 'Initiate Deployment',
     requestInfo: 'Request Information'
   }

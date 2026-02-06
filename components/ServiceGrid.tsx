@@ -3,7 +3,7 @@ import React from 'react';
 import { SecurityService, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
 import { 
-  ShieldCheck, ShieldAlert, ClipboardCheck, Cloud, Scale, Bot, Terminal, Globe, Mail, Fingerprint 
+  ShieldCheck, ShieldAlert, ClipboardCheck, Cloud, Scale, Bot, Terminal, Globe, Mail, Fingerprint, Network, Server, Smartphone 
 } from 'lucide-react';
 
 interface ServiceGridProps {
@@ -23,7 +23,10 @@ const CATEGORY_STYLES = {
   linux: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
   dns: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   email: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-  identity: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20'
+  identity: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
+  networking: 'bg-blue-600/10 text-blue-400 border-blue-600/20',
+  servers: 'bg-slate-500/10 text-slate-300 border-slate-500/20',
+  endpoints: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
 };
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -36,7 +39,10 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   linux: Terminal,
   dns: Globe,
   email: Mail,
-  identity: Fingerprint
+  identity: Fingerprint,
+  networking: Network,
+  servers: Server,
+  endpoints: Smartphone
 };
 
 const ServiceGrid: React.FC<ServiceGridProps> = ({ onSelect, onRequestQuote, services, lang }) => {
