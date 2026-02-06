@@ -21,12 +21,14 @@ export interface ResourceNotice {
 }
 
 const parseResponse = <T>(text: string | undefined): T => {
-  if (!text) throw new Error("Empty response");
+  if (!text) throw new Error("Empty response from AI engine.");
   try {
+    // Robust parsing for markdown-wrapped JSON
     const cleanJson = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanJson) as T;
   } catch (e) {
-    throw new Error("Invalid response format");
+    console.error("Failed to parse Gemini response:", text);
+    throw new Error("Invalid format received from security advisor engine.");
   }
 };
 
@@ -37,17 +39,17 @@ export const getSecurityAdvice = async (userInput: string, lang: Language): Prom
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
     contents: isEs 
-      ? `Analiza esta infraestructura y da consejos de ciberseguridad en ESPAÑOL: ${userInput}`
-      : `Analyze this infrastructure and provide cybersecurity advice in ENGLISH: ${userInput}`,
+      ? `Actúa como un experto en ciberseguridad. Analiza esta infraestructura y proporciona consejos técnicos precisos en ESPAÑOL: ${userInput}`
+      : `Act as a senior cybersecurity consultant. Analyze this infrastructure and provide precise technical advice in ENGLISH: ${userInput}`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          riskLevel: { type: Type.STRING, description: "Risk level (Low, Medium, High, Critical)" },
-          summary: { type: Type.STRING, description: "Detailed executive summary" },
-          recommendedServices: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of recommended services" },
-          immediateSteps: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Immediate steps for mitigation" },
+          riskLevel: { type: Type.STRING, description: "Risk classification (Low, Medium, High, Critical)" },
+          summary: { type: Type.STRING, description: "Summary of the findings" },
+          recommendedServices: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Specific security services needed" },
+          immediateSteps: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Steps to take right now to secure the perimeter" },
         },
         required: ["riskLevel", "summary", "recommendedServices", "immediateSteps"],
       },
@@ -62,7 +64,7 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Detailed tactical security report for: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
+    contents: `Generate a detailed tactical threat intelligence report for: ${threatType}. Language: ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
@@ -88,7 +90,7 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
 
   const response = await ai.models.generateContent({
     model: "gemini-3-pro-preview",
-    contents: `List 4 recent major cybersecurity notices from Israeli firms (e.g., Check Point, Wiz, SentinelOne). Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}. Use current web information.`,
+    contents: `List 4 real-world, recent cybersecurity alerts or reports from prominent Israeli firms (like Check Point, Wiz, SentinelOne, CyberArk). Language: ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
     config: {
       tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
@@ -112,8 +114,9 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
 
   const notices = parseResponse<ResourceNotice[]>(response.text);
   const grounding = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-  if (grounding) {
+  if (grounding && Array.isArray(grounding)) {
     notices.forEach((n, i) => {
+      // Attempt to map search grounding results back to the objects
       if (grounding[i]?.web?.uri) n.link = grounding[i].web.uri;
     });
   }
