@@ -9,8 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- reCAPTCHA v3 with placeholder site key for demonstration -->
-    <script src="https://www.google.com/recaptcha/api.js?render=6Ld_placeholder_site_key"></script>
     <script>
       // Shim process.env for browser compatibility
       window.process = window.process || { env: { API_KEY: "" } };
@@ -35,9 +33,6 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .text-glow {
-            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-        }
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -47,9 +42,6 @@
         ::-webkit-scrollbar-thumb {
             background: #1e293b;
             border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
         }
         @keyframes scan {
             0% { transform: translateY(-100%); }
@@ -68,7 +60,6 @@
             pointer-events: none;
             opacity: 0.3;
         }
-        .grecaptcha-badge { visibility: hidden; } /* Hide the badge to use custom branding, but keep it active */
     </style>
 <script type="importmap">
 {

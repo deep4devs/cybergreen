@@ -1,200 +1,50 @@
 
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { getSecurityAdvice, QuotaError } from '../services/geminiService';
+import { getSecurityAdvice } from '../services/geminiService';
 import { Language } from '../types';
-import { ThumbsUp, ThumbsDown, Send, CheckCircle2, MessageSquare } from 'lucide-react';
 
-interface AISecurityAdvisorProps {
-  lang: Language;
-}
-
-const AISecurityAdvisor: React.FC<AISecurityAdvisorProps> = ({ lang }) => {
+const AISecurityAdvisor: React.FC<{ lang: Language }> = ({ lang }) => {
   const [input, setInput] = useState('');
-  const [feedbackState, setFeedbackState] = useState<{
-    submitted: boolean;
-    rating: 'yes' | 'no' | null;
-    comment: string;
-    showCommentField: boolean;
-  }>({
-    submitted: false,
-    rating: null,
-    comment: '',
-    showCommentField: false,
-  });
-
   const isEs = lang === 'es';
 
   const mutation = useMutation({
-    mutationFn: (infrastructure: string) => {
-      // Reset feedback when a new analysis starts
-      setFeedbackState({ submitted: false, rating: null, comment: '', showCommentField: false });
-      return getSecurityAdvice(infrastructure, lang);
-    },
+    mutationFn: (infrastructure: string) => getSecurityAdvice(infrastructure, lang),
   });
 
   const handleAnalyze = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || mutation.isPending) return;
-    mutation.mutate(input);
-  };
-
-  const handleFeedbackSubmit = () => {
-    console.log('Logging AI Advisor Feedback:', {
-      rating: feedbackState.rating,
-      comment: feedbackState.comment,
-      infrastructureContext: input,
-      timestamp: new Date().toISOString()
-    });
-    setFeedbackState(prev => ({ ...prev, submitted: true }));
+    if (input.trim()) mutation.mutate(input);
   };
 
   const advice = mutation.data;
-  const loading = mutation.isPending;
-  const error = mutation.error ? (
-    mutation.error instanceof QuotaError 
-      ? mutation.error.message 
-      : (isEs ? 'Error en el motor de análisis. Por favor intenta de nuevo.' : 'Analysis engine error. Please try again.')
-  ) : null;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 pb-12 animate-in fade-in duration-700">
-      <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-6">
-           <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 text-2xl">🤖</div>
-        </div>
-        
-        <div className="mb-10">
-          <h2 className="text-3xl font-extrabold text-white mb-3 tracking-tight">{isEs ? 'Asesor de Seguridad IA' : 'AI Security Advisor'}</h2>
-          <p className="text-slate-400 text-sm font-medium leading-relaxed">{isEs ? 'Describe tu infraestructura tecnológica para un diagnóstico de riesgos avanzado.' : 'Describe your technology infrastructure for an advanced risk diagnosis.'}</p>
-        </div>
-
+    <div className="max-w-4xl mx-auto space-y-10 pb-12">
+      <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-10 shadow-2xl">
+        <h2 className="text-3xl font-extrabold text-white mb-3">{isEs ? 'Asesor de Seguridad IA' : 'AI Security Advisor'}</h2>
+        <p className="text-slate-400 text-sm mb-10">{isEs ? 'Describe tu infraestructura para un diagnóstico.' : 'Describe your infrastructure for a diagnosis.'}</p>
         <form onSubmit={handleAnalyze} className="space-y-6">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={isEs ? 'Ej: Servidor web expuesto, 50 bases de datos SQL, sin firewall de aplicación...' : 'Ex: Exposed web server, 50 SQL databases, no web application firewall...'}
-            className="w-full h-48 bg-slate-950/50 border border-white/10 rounded-2xl p-6 text-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all resize-none font-medium placeholder:text-slate-700"
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="w-full py-5 rounded-2xl font-extrabold text-sm uppercase tracking-widest bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
-          >
-            {loading ? (isEs ? 'ANALIZANDO VECTORES...' : 'ANALYZING VECTORS...') : (isEs ? '🚀 Generar Evaluación' : '🚀 Generate Assessment')}
-          </button>
+          <textarea value={input} onChange={e => setInput(e.target.value)} className="w-full h-48 bg-slate-950/50 border border-white/10 rounded-2xl p-6 text-white outline-none" placeholder="..." />
+          <button type="submit" disabled={mutation.isPending} className="w-full py-5 rounded-2xl bg-emerald-500 text-white font-extrabold uppercase tracking-widest">{mutation.isPending ? 'Analyzing...' : 'Generate Assessment'}</button>
         </form>
-
-        {error && (
-          <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-widest text-center animate-in shake">
-            {error}
-          </div>
-        )}
       </div>
-
       {advice && (
-        <div className="space-y-8 animate-in slide-in-from-bottom-6 duration-700">
-          <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-12 shadow-3xl">
-            <div className="flex items-center justify-between mb-10">
-              <h3 className="text-2xl font-extrabold text-white tracking-tight uppercase">{isEs ? 'Diagnóstico' : 'Diagnosis'}</h3>
-              <div className={`px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-[0.2em] border ${advice.riskLevel.toLowerCase().includes('high') || advice.riskLevel.toLowerCase().includes('alto') ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
-                {advice.riskLevel}
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-12">
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">{isEs ? 'Resumen Ejecutivo' : 'Executive Summary'}</div>
-                  <p className="text-slate-300 text-base leading-relaxed font-medium">{advice.summary}</p>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">{isEs ? 'Servicios Recomendados' : 'Recommended Services'}</div>
-                  <div className="flex flex-wrap gap-2">
-                    {advice.recommendedServices.map((s, i) => (
-                      <span key={i} className="bg-white/5 px-4 py-2 rounded-xl text-[10px] font-bold text-emerald-400 border border-white/5">{s}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-slate-950/50 p-8 rounded-[2rem] border border-white/5">
-                <h4 className="text-red-400 font-extrabold text-[11px] uppercase mb-8 tracking-[0.2em] flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                  {isEs ? 'Plan de Mitigación Inmediato' : 'Immediate Mitigation Plan'}
-                </h4>
-                <ul className="space-y-5">
-                  {advice.immediateSteps.map((s, i) => (
-                    <li key={i} className="text-slate-400 text-sm flex gap-4 font-medium items-start">
-                      <span className="text-emerald-500 font-bold text-xs mt-0.5">{i+1}.</span> 
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+        <div className="bg-[#0f172a] border border-white/5 rounded-[3rem] p-12 animate-in slide-in-from-bottom-6">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-2xl font-extrabold text-white uppercase">{isEs ? 'Diagnóstico' : 'Diagnosis'}</h3>
+            <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-4 py-1.5 rounded-full font-black text-[10px]">{advice.riskLevel}</span>
           </div>
-
-          {/* Feedback Mechanism */}
-          <div className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-8 overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            {!feedbackState.submitted ? (
-              <div className="relative z-10 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-3">
-                    <MessageSquare size={16} className="text-emerald-500" />
-                    {isEs ? '¿Fue útil este diagnóstico?' : 'Was this diagnosis helpful?'}
-                  </h4>
-                  <div className="flex items-center gap-3">
-                    <button 
-                      onClick={() => setFeedbackState(prev => ({ ...prev, rating: 'yes', showCommentField: true }))}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${feedbackState.rating === 'yes' ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
-                    >
-                      <ThumbsUp size={14} /> {isEs ? 'Sí' : 'Yes'}
-                    </button>
-                    <button 
-                      onClick={() => setFeedbackState(prev => ({ ...prev, rating: 'no', showCommentField: true }))}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${feedbackState.rating === 'no' ? 'bg-rose-500 border-rose-500 text-white' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
-                    >
-                      <ThumbsDown size={14} /> {isEs ? 'No' : 'No'}
-                    </button>
-                  </div>
-                </div>
-
-                {feedbackState.showCommentField && (
-                  <div className="animate-in slide-in-from-top-4 duration-300 space-y-4">
-                    <textarea 
-                      value={feedbackState.comment}
-                      onChange={(e) => setFeedbackState(prev => ({ ...prev, comment: e.target.value }))}
-                      placeholder={isEs ? 'Opcional: ¿Cómo podemos mejorar este análisis?' : 'Optional: How can we improve this analysis?'}
-                      className="w-full bg-slate-950/50 border border-white/5 rounded-2xl p-4 text-xs text-slate-300 focus:ring-1 focus:ring-emerald-500/50 outline-none transition-all resize-none font-medium h-24"
-                    />
-                    <div className="flex justify-end">
-                      <button 
-                        onClick={handleFeedbackSubmit}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 hover:text-white transition-all shadow-lg"
-                      >
-                        <Send size={12} /> {isEs ? 'Enviar Comentarios' : 'Submit Feedback'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-6 animate-in zoom-in-95 duration-500">
-                <CheckCircle2 size={32} className="text-emerald-500 mx-auto mb-4" />
-                <h4 className="text-lg font-extrabold text-white mb-2 uppercase tracking-tight">
-                  {isEs ? '¡Gracias por tu Feedback!' : 'Thank you for your feedback!'}
-                </h4>
-                <p className="text-slate-500 text-xs font-medium italic">
-                  {isEs 
-                    ? 'Tus comentarios ayudan a entrenar a nuestro motor de IA para diagnósticos más precisos.' 
-                    : 'Your comments help train our AI engine for more accurate diagnoses.'}
-                </p>
-              </div>
-            )}
+          <p className="text-slate-300 text-lg leading-relaxed mb-10">{advice.summary}</p>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Recommended Services</h4>
+              <div className="flex flex-wrap gap-2">{advice.recommendedServices.map((s, i) => <span key={i} className="bg-white/5 px-3 py-1.5 rounded-lg text-xs text-emerald-400">{s}</span>)}</div>
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-red-500 uppercase tracking-widest mb-4">Immediate Steps</h4>
+              <ul className="space-y-2">{advice.immediateSteps.map((s, i) => <li key={i} className="text-slate-400 text-sm">• {s}</li>)}</ul>
+            </div>
           </div>
         </div>
       )}

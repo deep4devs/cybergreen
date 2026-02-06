@@ -86,7 +86,7 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Generate a high-level tactical intelligence report for the threat: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}. Provide realistic confidence scores and priorities.`,
+      contents: `Generate a tactical intelligence report for: ${threatType}. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -96,7 +96,7 @@ export const generateThreatIntel = async (threatType: string, lang: Language): P
             technicalDetails: { type: Type.STRING },
             attackerProfile: { type: Type.STRING },
             recommendedCountermeasure: { type: Type.STRING },
-            confidenceScore: { type: Type.NUMBER, description: "A value from 0 to 100 indicating AI certainty." },
+            confidenceScore: { type: Type.NUMBER },
             mitigationPriority: { type: Type.STRING, enum: ['Low', 'Medium', 'High', 'Immediate'] }
           },
           required: ["title", "technicalDetails", "attackerProfile", "recommendedCountermeasure", "confidenceScore", "mitigationPriority"],
@@ -116,7 +116,7 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Search and summarize the top 4 recent cybersecurity notices/innovations from major Israeli firms like Check Point, Wiz, CyberArk, SentinelOne, and Cato Networks. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
+      contents: `Search and summarize the top 4 recent cybersecurity innovations from Israeli firms. Respond in ${isEs ? 'SPANISH' : 'ENGLISH'}.`,
       config: {
         tools: [{ googleSearch: {} }],
         responseMimeType: "application/json",
@@ -138,17 +138,7 @@ export const getIsraelCyberNotices = async (lang: Language): Promise<ResourceNot
       },
     });
 
-    const notices = parseResponse<ResourceNotice[]>(response.text);
-    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-    if (groundingChunks && groundingChunks.length > 0) {
-      notices.forEach((notice, index) => {
-        if (!notice.link && groundingChunks[index]?.web?.uri) {
-          notice.link = groundingChunks[index].web.uri;
-        }
-      });
-    }
-
-    return notices;
+    return parseResponse<ResourceNotice[]>(response.text);
   } catch (e) {
     return handleApiError(e, lang);
   }
