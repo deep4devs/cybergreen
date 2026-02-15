@@ -34,11 +34,11 @@ const App: React.FC = () => {
             <header className="text-center py-10 px-4 relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none"></div>
               <h1 className="text-6xl md:text-8xl font-extrabold text-white mb-8 tracking-tighter leading-[1.1] relative z-10">
-                {t.heroTitle} <br/>
+                {t.heroTitle} <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">{t.heroFuture}</span>
+                <span className="block text-3xl md:text-4xl text-white mt-6 font-semibold tracking-normal">Liz Hernandez</span>
               </h1>
               <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium mb-6 relative z-10">{t.heroDesc}</p>
-              <p className="text-white text-xl font-bold mb-4 relative z-10">Liz Hernandez</p>
               <p className="text-emerald-500/60 font-mono text-xs uppercase tracking-[0.3em] mb-14 italic relative z-10">"{t.slogan}"</p>
               <div className="flex flex-wrap justify-center gap-5 relative z-10">
                 <button onClick={() => setIsContactOpen(true)} className="bg-emerald-500 hover:bg-emerald-400 text-white px-10 py-5 rounded-2xl font-extrabold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20">{t.btnAI}</button>
@@ -68,13 +68,13 @@ const App: React.FC = () => {
       case Page.Monitor:
         return (
           <div className="animate-in fade-in duration-1000 px-4 max-w-[1600px] mx-auto pb-20">
-             <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-slate-900 border border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 mb-6"><Radio size={12} className="animate-pulse" /> SOC MISSION CONTROL</div>
-                <h2 className="text-7xl font-black text-white mb-6 tracking-tighter uppercase">Cyber<span className="text-emerald-500">Monitor</span></h2>
-             </div>
-             <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-3xl border border-white/10">
-               <ThreatMonitor lang={lang} />
-             </div>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-slate-900 border border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500 mb-6"><Radio size={12} className="animate-pulse" /> SOC MISSION CONTROL</div>
+              <h2 className="text-7xl font-black text-white mb-6 tracking-tighter uppercase">Cyber<span className="text-emerald-500">Monitor</span></h2>
+            </div>
+            <div className="glass p-8 sm:p-16 rounded-[4rem] shadow-3xl border border-white/10">
+              <ThreatMonitor lang={lang} />
+            </div>
           </div>
         );
       case Page.Resource:
@@ -104,7 +104,7 @@ const App: React.FC = () => {
       case Page.Advisor:
         return <AISecurityAdvisor lang={lang} />;
       case Page.Services:
-        return <ServiceGrid onSelect={() => {}} onRequestQuote={(s) => {setContactServiceTitle(s.title); setIsContactOpen(true);}} services={allServices} lang={lang} />;
+        return <ServiceGrid onSelect={() => { }} onRequestQuote={(s) => { setContactServiceTitle(s.title); setIsContactOpen(true); }} services={allServices} lang={lang} />;
       default: return null;
     }
   };
