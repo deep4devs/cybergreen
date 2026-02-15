@@ -38,6 +38,7 @@ const App: React.FC = () => {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">{t.heroFuture}</span>
               </h1>
               <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-medium mb-6 relative z-10">{t.heroDesc}</p>
+              <p className="text-white text-xl font-bold mb-4 relative z-10">Liz Hernandez</p>
               <p className="text-emerald-500/60 font-mono text-xs uppercase tracking-[0.3em] mb-14 italic relative z-10">"{t.slogan}"</p>
               <div className="flex flex-wrap justify-center gap-5 relative z-10">
                 <button onClick={() => setIsContactOpen(true)} className="bg-emerald-500 hover:bg-emerald-400 text-white px-10 py-5 rounded-2xl font-extrabold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20">{t.btnAI}</button>
